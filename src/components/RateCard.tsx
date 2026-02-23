@@ -147,7 +147,7 @@ export function RateCard({
   ]
 
   return (
-    <article className="relative border-b border-surface-border px-4 py-3 transition-colors hover:bg-surface-hover/50">
+    <article className="relative px-4 py-3 transition-colors hover:bg-surface-hover/50">
       {/* More button — top right of the rate/tweet */}
       <div className="absolute right-4 top-3 z-10" ref={menuRef}>
         <button
@@ -220,10 +220,10 @@ export function RateCard({
                 <button
                   type="button"
                   onClick={isFollowing ? onUnfollow : onFollow}
-                  className={`rounded-full border px-3 py-1 text-sm font-semibold transition-colors ${
+                  className={`rounded-full border px-3 py-1 text-sm font-semibold transition-colors shadow-sm ${
                     isFollowing
                       ? 'border-surface-border bg-transparent text-[var(--color-text)] hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
-                      : 'border-gold-500/50 bg-gold-500/10 text-gold-400 hover:bg-gold-500/20'
+                      : 'border-gold-500/60 bg-gold-500/10 text-gold-400 hover:bg-gold-500/25 hover:shadow-gold-glow'
                   }`}
                 >
                   {isFollowing ? 'Following' : 'Follow'}

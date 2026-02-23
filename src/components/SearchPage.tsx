@@ -181,7 +181,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search people, games, or rates"
-            className="w-full rounded-full border border-surface-border bg-surface-hover py-3 pl-12 pr-4 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-gold-500/50 focus:outline-none focus:ring-1 focus:ring-gold-500/50"
+            className="w-full rounded-full border border-surface-border/70 bg-surface-hover/80 py-3 pl-12 pr-4 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] shadow-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
             autoFocus
           />
         </div>
@@ -230,31 +230,30 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
                 <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
                   Rates
                 </h2>
-                <ul className="divide-y divide-surface-border">
+                <div className="space-y-1">
                   {rates.map((rate) => (
-                    <li key={rate.id}>
-                      <RateCard
-                        {...rate}
-                        timeAgo={rate.timeAgo ?? formatTimeAgo(rate.createdAt)}
-                        currentUsername={profile.username}
-                        liked={rate.liked}
-                        onLike={() => handleLike(rate.id)}
-                        onUnlike={() => handleUnlike(rate.id)}
-                        bookmarked={rate.bookmarked}
-                        onBookmark={() => handleBookmark(rate.id)}
-                        onUnbookmark={() => handleUnbookmark(rate.id)}
-                        currentUserDisplayName={profile.displayName}
-                        onCommentAdded={(newCount) =>
-                          setRates((prev) =>
-                            prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r))
-                          )
-                        }
-                        onRaterClick={onViewProfile}
-                        onViewRate={onViewRate}
-                      />
-                    </li>
+                    <RateCard
+                      key={rate.id}
+                      {...rate}
+                      timeAgo={rate.timeAgo ?? formatTimeAgo(rate.createdAt)}
+                      currentUsername={profile.username}
+                      liked={rate.liked}
+                      onLike={() => handleLike(rate.id)}
+                      onUnlike={() => handleUnlike(rate.id)}
+                      bookmarked={rate.bookmarked}
+                      onBookmark={() => handleBookmark(rate.id)}
+                      onUnbookmark={() => handleUnbookmark(rate.id)}
+                      currentUserDisplayName={profile.displayName}
+                      onCommentAdded={(newCount) =>
+                        setRates((prev) =>
+                          prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r)),
+                        )
+                      }
+                      onRaterClick={onViewProfile}
+                      onViewRate={onViewRate}
+                    />
                   ))}
-                </ul>
+                </div>
               </section>
             )}
           </div>

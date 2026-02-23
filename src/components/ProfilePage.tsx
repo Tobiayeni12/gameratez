@@ -315,10 +315,10 @@ bookmarkCount: r.bookmarkCount ?? 0,
                         setFollowLoading(false)
                       }
                     }}
-                    className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
+                    className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors shadow-sm disabled:opacity-50 ${
                       isFollowingView
                         ? 'border-surface-border bg-transparent text-[var(--color-text)] hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
-                        : 'border-gold-500/50 bg-gold-500/10 text-gold-400 hover:bg-gold-500/20'
+                        : 'border-gold-500/60 bg-gold-500/10 text-gold-400 hover:bg-gold-500/25 hover:shadow-gold-glow'
                     }`}
                   >
                     {followLoading ? '…' : isFollowingView ? 'Following' : 'Follow'}
@@ -327,7 +327,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
                     <button
                       type="button"
                       onClick={() => onMessageClick(viewedUser.username)}
-                      className="rounded-full border border-surface-border bg-surface-hover px-4 py-2 text-sm font-medium text-[var(--color-text)] hover:bg-surface-elevated"
+                      className="rounded-full border border-surface-border bg-surface-hover px-4 py-2 text-sm font-medium text-[var(--color-text)] hover:border-[var(--color-accent)] hover:bg-surface-elevated hover:text-[var(--color-accent)]"
                     >
                       Message
                     </button>
@@ -371,29 +371,28 @@ bookmarkCount: r.bookmarkCount ?? 0,
               No rates yet. {isViewingOther ? '' : 'Post from the feed to see them here.'}
             </p>
           ) : (
-            <ul className="divide-y divide-surface-border">
+            <div className="space-y-1">
               {rates.map((rate) => (
-                <li key={rate.id}>
-                  <RateCard
-                    {...rate}
-                    currentUsername={profile?.username}
-                    liked={rate.liked}
-                    onLike={() => handleLike(rate.id)}
-                    onUnlike={() => handleUnlike(rate.id)}
-                    bookmarked={rate.bookmarked}
-                    onBookmark={() => handleBookmark(rate.id)}
-                    onUnbookmark={() => handleUnbookmark(rate.id)}
-                    currentUserDisplayName={profile?.displayName}
-                    onCommentAdded={(newCount) =>
-                      setRates((prev) =>
-                        prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r))
-                      )
-                    }
-                    onRaterClick={isViewingOther ? undefined : undefined}
-                  />
-                </li>
+                <RateCard
+                  key={rate.id}
+                  {...rate}
+                  currentUsername={profile?.username}
+                  liked={rate.liked}
+                  onLike={() => handleLike(rate.id)}
+                  onUnlike={() => handleUnlike(rate.id)}
+                  bookmarked={rate.bookmarked}
+                  onBookmark={() => handleBookmark(rate.id)}
+                  onUnbookmark={() => handleUnbookmark(rate.id)}
+                  currentUserDisplayName={profile?.displayName}
+                  onCommentAdded={(newCount) =>
+                    setRates((prev) =>
+                      prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r)),
+                    )
+                  }
+                  onRaterClick={isViewingOther ? undefined : undefined}
+                />
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </div>

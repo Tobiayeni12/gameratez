@@ -173,29 +173,28 @@ export function SavedFilesPage({ profile, onViewProfile, onViewRate }: SavedFile
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-surface-border">
+          <div className="space-y-1">
             {rates.map((rate) => (
-              <li key={rate.id}>
-                <RateCard
-                  {...rate}
-                  currentUsername={profile.username}
-                  liked={rate.liked}
-                  onLike={() => handleLike(rate.id)}
-                  onUnlike={() => handleUnlike(rate.id)}
-                  bookmarked={true}
-                  onUnbookmark={() => handleUnbookmark(rate.id)}
-                  currentUserDisplayName={profile.displayName}
-                  onCommentAdded={(newCount) =>
-                    setRates((prev) =>
-                      prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r))
-                    )
-                  }
+              <RateCard
+                key={rate.id}
+                {...rate}
+                currentUsername={profile.username}
+                liked={rate.liked}
+                onLike={() => handleLike(rate.id)}
+                onUnlike={() => handleUnlike(rate.id)}
+                bookmarked={true}
+                onUnbookmark={() => handleUnbookmark(rate.id)}
+                currentUserDisplayName={profile.displayName}
+                onCommentAdded={(newCount) =>
+                  setRates((prev) =>
+                    prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r)),
+                  )
+                }
                 onRaterClick={onViewProfile}
                 onViewRate={onViewRate}
-                />
-              </li>
+              />
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </main>

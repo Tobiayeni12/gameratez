@@ -298,7 +298,7 @@ export function Feed({
         <button
           type="button"
           onClick={() => onTabChange('for-you')}
-          className="flex-1 py-4 text-center font-semibold transition-colors hover:bg-surface-hover"
+          className="flex-1 border-b-2 border-transparent py-4 text-center font-semibold transition-colors hover:bg-surface-hover hover:text-[var(--color-accent)]"
           style={{
             color: activeTab === 'for-you' ? 'var(--color-text)' : 'var(--color-text-muted)',
             borderBottom: activeTab === 'for-you' ? '2px solid var(--color-gold)' : '2px solid transparent',
@@ -309,7 +309,7 @@ export function Feed({
         <button
           type="button"
           onClick={() => onTabChange('following')}
-          className="flex-1 py-4 text-center font-semibold transition-colors hover:bg-surface-hover"
+          className="flex-1 border-b-2 border-transparent py-4 text-center font-semibold transition-colors hover:bg-surface-hover hover:text-[var(--color-accent)]"
           style={{
             color: activeTab === 'following' ? 'var(--color-text)' : 'var(--color-text-muted)',
             borderBottom: activeTab === 'following' ? '2px solid var(--color-gold)' : '2px solid transparent',
@@ -358,28 +358,32 @@ export function Feed({
               : 'No rates yet. Be the first to rate a game!'}
           </p>
         ) : (
-          rates.map((rate) => (
-          <RateCard
-            key={rate.id}
-            {...rate}
-            currentUsername={profile.username}
-            isFollowing={followingSet.has(rate.raterHandle.toLowerCase())}
-            onFollow={() => handleFollow(rate.raterHandle)}
-            onUnfollow={() => handleUnfollow(rate.raterHandle)}
-            liked={rate.liked}
-            onLike={() => handleLike(rate.id)}
-            onUnlike={() => handleUnlike(rate.id)}
-            bookmarked={rate.bookmarked}
-            onBookmark={() => handleBookmark(rate.id)}
-            onUnbookmark={() => handleUnbookmark(rate.id)}
-            currentUserDisplayName={profile.displayName}
-            onCommentAdded={(newCount) =>
-              setRates((prev) => prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r)))
-            }
-            onRaterClick={onViewProfile}
-            onViewRate={onViewRate}
-          />
-        ))
+          <div className="space-y-1">
+            {rates.map((rate) => (
+              <RateCard
+                key={rate.id}
+                {...rate}
+                currentUsername={profile.username}
+                isFollowing={followingSet.has(rate.raterHandle.toLowerCase())}
+                onFollow={() => handleFollow(rate.raterHandle)}
+                onUnfollow={() => handleUnfollow(rate.raterHandle)}
+                liked={rate.liked}
+                onLike={() => handleLike(rate.id)}
+                onUnlike={() => handleUnlike(rate.id)}
+                bookmarked={rate.bookmarked}
+                onBookmark={() => handleBookmark(rate.id)}
+                onUnbookmark={() => handleUnbookmark(rate.id)}
+                currentUserDisplayName={profile.displayName}
+                onCommentAdded={(newCount) =>
+                  setRates((prev) =>
+                    prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r)),
+                  )
+                }
+                onRaterClick={onViewProfile}
+                onViewRate={onViewRate}
+              />
+            ))}
+          </div>
         )}
       </div>
     </main>

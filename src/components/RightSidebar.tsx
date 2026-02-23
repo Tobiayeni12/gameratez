@@ -35,14 +35,14 @@ export function RightSidebar({ className = '', searchQuery = '', onSearchQueryCh
       {/* Search */}
       <div className="sticky top-0 z-10 bg-surface/95 pb-3 pt-1 backdrop-blur-xl">
         <div className="relative">
-          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--color-text-muted)]" />
+          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--color-accent)]" />
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => onSearchQueryChange?.(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') onSearchNavigate?.() }}
             placeholder="Search games & raters"
-            className="w-full rounded-full border border-surface-border/70 bg-surface-elevated/80 py-3 pl-12 pr-4 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] shadow-sm focus:border-gold-500/50 focus:outline-none focus:ring-1 focus:ring-gold-500/50"
+            className="w-full rounded-full border border-surface-border/70 bg-surface-elevated/80 py-3 pl-12 pr-4 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] shadow-sm focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
           />
         </div>
       </div>
