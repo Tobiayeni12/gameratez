@@ -149,8 +149,27 @@ export function RateCard({
     { icon: FlagIcon, label: 'Report rate' },
   ]
 
+  const platformBgClass =
+    platform === 'ps'
+      ? 'platform-bg-ps'
+      : platform === 'xbox'
+        ? 'platform-bg-xbox'
+        : platform === 'pc'
+          ? 'platform-bg-pc'
+          : ''
+
   return (
-    <article className="relative px-4 py-3 transition-colors hover:bg-surface-hover/50">
+    <article className="relative overflow-hidden rounded-2xl px-4 py-3">
+      {/* Platform “animated color video” behind content */}
+      {platformBgClass && (
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 platform-anim ${platformBgClass}`}
+        />
+      )}
+      {/* Subtle dark overlay to keep text readable */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-surface/65" />
+
       {/* More button — top right of the rate/tweet */}
       <div className="absolute right-4 top-3 z-10" ref={menuRef}>
         <button
@@ -180,23 +199,10 @@ export function RateCard({
         )}
       </div>
 
-      <div className="flex gap-3 pr-8">
-        {/* Avatar + platform dot */}
-        <div className="flex flex-col items-center gap-1">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400">
-            <span className="text-lg font-semibold">{raterName[0]}</span>
-          </div>
-          {platform && (
-            <span
-              className={`h-2 w-2 rounded-full ${
-                platform === 'ps'
-                  ? 'bg-blue-500'
-                  : platform === 'xbox'
-                    ? 'bg-emerald-500'
-                    : 'bg-red-500'
-              }`}
-            />
-          )}
+      <div className="relative z-10 flex gap-3 pr-8">
+        {/* Avatar */}
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400">
+          <span className="text-lg font-semibold">{raterName[0]}</span>
         </div>
 
         <div className="min-w-0 flex-1">
@@ -248,22 +254,9 @@ export function RateCard({
             )}
           </div>
 
-          {/* Game name + platform */}
+          {/* Game name */}
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className="font-medium text-gold-400">{gameName}</span>
-            {platform && (
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
-                  platform === 'ps'
-                    ? 'bg-blue-600/40 text-blue-300 border border-blue-500/60'
-                    : platform === 'xbox'
-                      ? 'bg-emerald-600/40 text-emerald-300 border border-emerald-500/60'
-                      : 'bg-red-700/40 text-red-200 border border-red-500/60'
-                }`}
-              >
-                {platform === 'ps' ? 'PS' : platform === 'xbox' ? 'Xbox' : 'PC'}
-              </span>
-            )}
           </div>
 
           {/* Body text */}
