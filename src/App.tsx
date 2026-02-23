@@ -65,7 +65,7 @@ function App() {
   return (
     <div className="flex min-h-screen flex-col bg-surface text-[var(--color-text)]">
       <MobileHeader />
-      <div className="flex min-h-screen w-full flex-1 flex-col md:flex-row">
+      <div className="flex min-h-screen w-full flex-1 flex-col md:flex-row md:max-w-[1225px] md:mx-auto">
         {/* Left sidebar — desktop only, in flow */}
         <div className="hidden md:block md:sticky md:top-0 md:h-screen md:w-[var(--sidebar-width)] md:flex-shrink-0">
           <LeftSidebar
