@@ -255,7 +255,11 @@ export function RateCard({
                   className="overflow-hidden rounded-2xl border border-surface-border/70 bg-black"
                 >
                   <img
-                    src={url}
+                    src={
+                      url.startsWith('http://') || url.startsWith('https://')
+                        ? url
+                        : `${API_BASE}${url}`
+                    }
                     alt="Rate attachment"
                     className="w-full h-auto object-contain"
                   />

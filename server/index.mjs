@@ -764,13 +764,12 @@ app.post('/api/rates', (req, res) => {
       }
     }
 
-    // Optional: images (array of URLs served from /uploads)
-    const imageUrls =
-      Array.isArray(images) ?
-        images
+    // Optional: images (array of URLs or relative paths like /uploads/...)
+    const imageUrls = Array.isArray(images)
+      ? images
           .map((u) => (typeof u === 'string' ? u.trim() : ''))
-          .filter((u) => u.startsWith('/uploads/')) :
-        []
+          .filter((u) => u.length > 0)
+      : []
 
     // Optional: poll (question + 2–4 options)
     let pollData = undefined
