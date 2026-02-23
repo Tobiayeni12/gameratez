@@ -26,6 +26,7 @@ export interface PreferencesData {
   username: string
   favoriteGameKinds: string[]
   feedPreference: string
+  platform: 'ps' | 'xbox' | 'pc' | ''
 }
 
 interface PreferencesFormProps {
@@ -38,6 +39,7 @@ export function PreferencesForm({ onSubmit, initialDisplayName = '' }: Preferenc
   const [username, setUsername] = useState('')
   const [favoriteGameKinds, setFavoriteGameKinds] = useState<string[]>([])
   const [feedPreference, setFeedPreference] = useState('all')
+  const [platform, setPlatform] = useState<'ps' | 'xbox' | 'pc' | ''>('')
   const [error, setError] = useState('')
 
   function toggleGenre(genre: string) {
@@ -67,6 +69,7 @@ export function PreferencesForm({ onSubmit, initialDisplayName = '' }: Preferenc
       username: handle,
       favoriteGameKinds,
       feedPreference,
+      platform,
     })
   }
 
@@ -98,6 +101,35 @@ export function PreferencesForm({ onSubmit, initialDisplayName = '' }: Preferenc
             maxLength={50}
             className="w-full rounded-xl border border-surface-border bg-surface-hover px-4 py-3 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-gold-500/50 focus:outline-none focus:ring-1 focus:ring-gold-500/50"
           />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-[var(--color-text-muted)]">
+            Primary platform
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'ps', label: 'PlayStation', badge: 'PS' },
+              { id: 'xbox', label: 'Xbox', badge: 'Xbox' },
+              { id: 'pc', label: 'PC', badge: 'PC' },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setPlatform(opt.id as 'ps' | 'xbox' | 'pc')}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  platform === opt.id
+                    ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)] ring-1 ring-[var(--color-accent)]'
+                    : 'bg-surface-hover text-[var(--color-text-muted)] hover:bg-surface-border hover:text-[var(--color-text)]'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            This will show on your profile and rates.
+          </p>
         </div>
 
         <div>

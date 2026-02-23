@@ -27,6 +27,7 @@ type RateDetail = {
   repostCount?: number
   liked?: boolean
   bookmarked?: boolean
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 interface RateDetailPageProps {
@@ -152,6 +153,7 @@ export function RateDetailPage({ rateId, profile, onBack, onViewProfile }: RateD
             likeCount={rate.likeCount ?? 0}
             bookmarkCount={rate.bookmarkCount ?? 0}
             repostCount={rate.repostCount ?? 0}
+            platform={rate.platform}
             currentUsername={profile.username}
             liked={rate.liked}
             onLike={handleLike}

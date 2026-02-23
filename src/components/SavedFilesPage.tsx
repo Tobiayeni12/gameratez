@@ -19,6 +19,7 @@ type SavedRateItem = {
   repostCount: number
   liked?: boolean
   bookmarked?: boolean
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 function formatTimeAgo(createdAt: string): string {
@@ -71,6 +72,7 @@ export function SavedFilesPage({ profile, onViewProfile, onViewRate }: SavedFile
           repostCount: r.repostCount ?? 0,
           liked: r.liked,
           bookmarked: true,
+          platform: r.platform ?? '',
         }))
       )
     } catch (e) {
@@ -190,6 +192,7 @@ export function SavedFilesPage({ profile, onViewProfile, onViewRate }: SavedFile
                     prev.map((r) => (r.id === rate.id ? { ...r, commentCount: newCount } : r)),
                   )
                 }
+                platform={rate.platform}
                 onRaterClick={onViewProfile}
                 onViewRate={onViewRate}
               />

@@ -285,7 +285,7 @@ app.post('/api/auth/signup', async (req, res) => {
 // POST /api/auth/complete
 app.post('/api/auth/complete', (req, res) => {
   try {
-    const { completeToken, displayName, username, favoriteGameKinds, feedPreference } = req.body
+    const { completeToken, displayName, username, favoriteGameKinds, feedPreference, platform } = req.body
     if (!completeToken || !displayName || !username) {
       return res.status(400).json({ error: 'completeToken, displayName, and username required' })
     }
@@ -306,6 +306,9 @@ app.post('/api/auth/complete', (req, res) => {
     }
 
     const handle = String(username).trim().replace(/^@/, '')
+    const normalizedPlatform =
+      platform === 'ps' || platform === 'xbox' || platform === 'pc' ? platform : ''
+
     const profile = {
       id: `profile-${Date.now()}`,
       email: data.email,
@@ -315,6 +318,7 @@ app.post('/api/auth/complete', (req, res) => {
       favoriteGameKinds: Array.isArray(favoriteGameKinds) ? favoriteGameKinds : [],
       feedPreference: typeof feedPreference === 'string' ? feedPreference : 'all',
       createdAt: new Date().toISOString(),
+      platform: normalizedPlatform,
     }
     users.set(data.email, { ...profile, passwordHash: data.passwordHash ?? null })
     completeTokens.delete(completeToken)

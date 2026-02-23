@@ -54,6 +54,8 @@ export interface RateCardProps {
   onRaterClick?: (handle: string) => void
   /** When set, show a "View" link that opens this rate in detail */
   onViewRate?: (rateId: string) => void
+  /** Primary platform of the rater for this rate */
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 type CommentItem = {
@@ -87,6 +89,7 @@ export function RateCard({
   bookmarkCount = 0,
   repostCount = 0,
   images = [],
+  platform,
   currentUsername,
   isFollowing = false,
   onFollow,
@@ -232,9 +235,22 @@ export function RateCard({
             )}
           </div>
 
-          {/* Game name */}
-          <div className="mt-1">
+          {/* Game name + platform */}
+          <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className="font-medium text-gold-400">{gameName}</span>
+            {platform && (
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  platform === 'ps'
+                    ? 'bg-blue-600/40 text-blue-300 border border-blue-500/50'
+                    : platform === 'xbox'
+                      ? 'bg-emerald-600/40 text-emerald-300 border border-emerald-500/50'
+                      : 'bg-purple-700/40 text-purple-200 border border-purple-500/50'
+                }`}
+              >
+                {platform === 'ps' ? 'PS' : platform === 'xbox' ? 'Xbox' : 'PC'}
+              </span>
+            )}
           </div>
 
           {/* Body text */}

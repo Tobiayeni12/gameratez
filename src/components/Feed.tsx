@@ -20,6 +20,7 @@ type RateItem = {
   liked?: boolean
   bookmarked?: boolean
   images?: string[]
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 /** API rate shape (has createdAt instead of timeAgo; liked/bookmarked from server when username in query) */
@@ -50,6 +51,7 @@ function apiRateToItem(r: ApiRate): RateItem {
     liked: r.liked,
     bookmarked: r.bookmarked,
     images: Array.isArray((r as any).images) ? (r as any).images : undefined,
+    platform: (r as any).platform ?? '',
   }
 }
 
@@ -137,6 +139,7 @@ export function Feed({
           body: payload.body,
           images: payload.images,
           scheduledAt: payload.scheduledAt,
+          platform: profile.platform,
           raterName: profile.displayName,
           raterHandle: profile.username,
         }),
@@ -363,6 +366,7 @@ export function Feed({
               <RateCard
                 key={rate.id}
                 {...rate}
+                platform={rate.platform}
                 currentUsername={profile.username}
                 isFollowing={followingSet.has(rate.raterHandle.toLowerCase())}
                 onFollow={() => handleFollow(rate.raterHandle)}

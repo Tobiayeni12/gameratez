@@ -102,6 +102,7 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
                   username: data.username,
                   favoriteGameKinds: data.favoriteGameKinds,
                   feedPreference: data.feedPreference,
+                  platform: data.platform,
                 }),
               })
               const json = await res.json().catch(() => ({}))
@@ -123,6 +124,7 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
               bio: '',
               favoriteGameKinds: data.favoriteGameKinds,
               feedPreference: data.feedPreference,
+              platform: data.platform,
             })
             onProfileCreated(saved)
           }}

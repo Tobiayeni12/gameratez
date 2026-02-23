@@ -20,6 +20,7 @@ type ProfileRateItem = {
   repostCount: number
   liked?: boolean
   bookmarked?: boolean
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 function formatTimeAgo(createdAt: string): string {
@@ -112,11 +113,12 @@ export function ProfilePage({
             timeAgo: formatTimeAgo(r.createdAt),
             commentCount: r.commentCount ?? 0,
             likeCount: r.likeCount ?? 0,
-bookmarkCount: r.bookmarkCount ?? 0,
-          repostCount: r.repostCount ?? 0,
-          liked: r.liked,
-          bookmarked: r.bookmarked,
-        }))
+            bookmarkCount: r.bookmarkCount ?? 0,
+            repostCount: r.repostCount ?? 0,
+            liked: r.liked,
+            bookmarked: r.bookmarked,
+            platform: r.platform ?? '',
+          })),
         )
       })
       .catch(() => {
@@ -149,6 +151,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
           initialDisplayName={profile.displayName}
           initialUsername={profile.username}
           initialBio={profile.bio}
+          initialPlatform={profile.platform}
           onSubmit={handleUpdateSubmit}
         />
       </div>

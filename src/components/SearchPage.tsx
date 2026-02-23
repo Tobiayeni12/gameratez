@@ -20,6 +20,7 @@ type SearchRate = {
   bookmarkCount?: number
   liked?: boolean
   bookmarked?: boolean
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 function formatTimeAgo(createdAt: string): string {
@@ -251,6 +252,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
                       }
                       onRaterClick={onViewProfile}
                       onViewRate={onViewRate}
+                      platform={rate.platform}
                     />
                   ))}
                 </div>

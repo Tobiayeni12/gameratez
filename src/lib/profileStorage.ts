@@ -9,6 +9,8 @@ export interface UserProfile {
   favoriteGameKinds: string[]
   feedPreference: string
   createdAt: string
+  /** Primary platform the user plays on: 'ps' | 'xbox' | 'pc' */
+  platform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 /** Normalize server profile so it always has full UserProfile shape (for save/load). */
@@ -23,6 +25,10 @@ export function normalizeProfile(profile: Partial<UserProfile> | null): UserProf
     favoriteGameKinds: Array.isArray(profile.favoriteGameKinds) ? profile.favoriteGameKinds : [],
     feedPreference: typeof profile.feedPreference === 'string' ? profile.feedPreference : 'all',
     createdAt: profile.createdAt ?? new Date().toISOString(),
+    platform:
+      profile.platform === 'ps' || profile.platform === 'xbox' || profile.platform === 'pc'
+        ? profile.platform
+        : '',
   }
 }
 
@@ -37,6 +43,7 @@ export function getDefaultProfile(): UserProfile {
     favoriteGameKinds: [],
     feedPreference: 'all',
     createdAt: new Date().toISOString(),
+    platform: '',
   }
 }
 

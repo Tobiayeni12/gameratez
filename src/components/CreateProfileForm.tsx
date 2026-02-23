@@ -4,6 +4,7 @@ export interface ProfileFormData {
   displayName: string
   username: string
   bio: string
+  platform: 'ps' | 'xbox' | 'pc' | ''
 }
 
 interface CreateProfileFormProps {
@@ -13,6 +14,7 @@ interface CreateProfileFormProps {
   initialBio?: string
   /** When true, hide title and description (e.g. for entry gate) */
   minimal?: boolean
+  initialPlatform?: 'ps' | 'xbox' | 'pc' | ''
 }
 
 export function CreateProfileForm({
@@ -21,10 +23,12 @@ export function CreateProfileForm({
   initialUsername = '',
   initialBio = '',
   minimal = false,
+  initialPlatform = '',
 }: CreateProfileFormProps) {
   const [displayName, setDisplayName] = useState(initialDisplayName)
   const [username, setUsername] = useState(initialUsername)
   const [bio, setBio] = useState(initialBio)
+  const [platform, setPlatform] = useState<'ps' | 'xbox' | 'pc' | ''>(initialPlatform)
   const [error, setError] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
@@ -47,6 +51,7 @@ export function CreateProfileForm({
       displayName: displayName.trim(),
       username: handle,
       bio: bio.trim(),
+      platform,
     })
   }
 
@@ -131,6 +136,34 @@ export function CreateProfileForm({
           <p className="mt-1 text-right text-xs text-[var(--color-text-muted)]">
             {bio.length}/160
           </p>
+        </div>
+
+        <div>
+          <label
+            className="mb-2 block text-sm font-medium text-[var(--color-text-muted)]"
+          >
+            Primary platform
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'ps', label: 'PlayStation' },
+              { id: 'xbox', label: 'Xbox' },
+              { id: 'pc', label: 'PC' },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setPlatform(opt.id as 'ps' | 'xbox' | 'pc')}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  platform === opt.id
+                    ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)] ring-1 ring-[var(--color-accent)]'
+                    : 'bg-surface-hover text-[var(--color-text-muted)] hover:bg-surface-border hover:text-[var(--color-text)]'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <button
