@@ -11,6 +11,7 @@ import {
   SearchIcon,
 } from './icons'
 import playstationXboxGamesData from '../data/playstationXboxGames2012_2026.json'
+import { API_BASE } from '../lib/apiBase'
 
 /** PlayStation and Xbox games (2012–2026). Only games in this list can be rated. */
 const GAMES_LIST: string[] = Array.isArray(playstationXboxGamesData) ? playstationXboxGamesData : (playstationXboxGamesData as { default?: string[] }).default ?? []
@@ -24,7 +25,7 @@ export interface RateComposeModalProps {
   profile: { displayName: string }
   isOpen: boolean
   onClose: () => void
-  onSubmit: (payload: { gameName: string; rating: number; body: string }) => void
+  onSubmit: (payload: { gameName: string; rating: number; body: string; images?: string[]; scheduledAt?: string | null }) => void
 }
 
 export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateComposeModalProps) {
@@ -35,6 +36,12 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
   const [gameSearchQuery, setGameSearchQuery] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
   const gameSearchInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [images, setImages] = useState<string[]>([])
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [scheduleOpen, setScheduleOpen] = useState(false)
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null)
 
   const searchTrimmed = gameSearchQuery.trim()
   const searchLower = searchTrimmed.toLowerCase()
@@ -73,11 +80,58 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
   function handleSubmit() {
     if (!selectedGame || !body.trim()) return
     if (!isGameInList(selectedGame)) return
-    onSubmit({ gameName: selectedGame, rating: ratingClamped, body: body.trim() })
+    onSubmit({
+      gameName: selectedGame,
+      rating: ratingClamped,
+      body: body.trim(),
+      images: images.length ? images : undefined,
+      scheduledAt,
+    })
     setSelectedGame(null)
     setRating(5)
     setBody('')
+    setImages([])
+    setUploadError(null)
+    setShowEmojiPicker(false)
+    setScheduleOpen(false)
+    setScheduledAt(null)
     onClose()
+  }
+
+  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    const remainingSlots = Math.max(0, 4 - images.length)
+    if (remainingSlots <= 0) {
+      setUploadError('You can attach up to 4 images.')
+      return
+    }
+    const filesToUpload = Array.from(files).slice(0, remainingSlots)
+    setUploadError(null)
+    try {
+      const uploaded: string[] = []
+      for (const file of filesToUpload) {
+        const formData = new FormData()
+        formData.append('image', file)
+        const res = await fetch(`${API_BASE}/api/upload-image`, {
+          method: 'POST',
+          body: formData,
+        })
+        const data = await res.json().catch(() => ({}))
+        if (res.ok && typeof data.url === 'string') {
+          uploaded.push(data.url)
+        } else if (!res.ok) {
+          throw new Error(data.error || 'Upload failed')
+        }
+      }
+      if (uploaded.length) {
+        setImages((prev) => [...prev, ...uploaded])
+      }
+    } catch (err) {
+      setUploadError('Could not upload image(s).')
+    } finally {
+      if (e.target) e.target.value = ''
+    }
   }
 
   if (!isOpen) return null
@@ -186,6 +240,35 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
               autoFocus
             />
 
+            {/* Image previews */}
+            {images.length > 0 && (
+              <div className="mb-3 grid grid-cols-2 gap-2 rounded-2xl border border-surface-border/70 bg-surface-hover/40 p-2">
+                {images.map((url, index) => (
+                  <div key={url} className="relative overflow-hidden rounded-xl">
+                    <img
+                      src={url}
+                      alt={`Attachment ${index + 1}`}
+                      className="h-40 w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImages((prev) => prev.filter((u) => u !== url))
+                      }
+                      className="absolute right-1 top-1 rounded-full bg-black/70 px-1.5 py-0.5 text-xs font-semibold text-white"
+                      aria-label="Remove image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {uploadError && (
+              <p className="mb-2 text-xs text-red-400">{uploadError}</p>
+            )}
+
             {/* Reply line (Twitter-style) */}
             <p className="mb-3 flex items-center gap-1.5 text-sm text-gold-400">
               <span className="text-base">🌐</span>
@@ -196,6 +279,7 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
               <div className="flex items-center gap-1">
                 <button
                   type="button"
+                  onClick={() => fileInputRef.current?.click()}
                   className="rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400"
                   aria-label="Upload images"
                   title="Upload images"
@@ -204,7 +288,10 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
                 </button>
                 <button
                   type="button"
-                  className="rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400"
+                  onClick={() => setShowEmojiPicker((open) => !open)}
+                  className={`rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400 ${
+                    showEmojiPicker ? 'bg-gold-500/10 text-gold-400' : ''
+                  }`}
                   aria-label="Add emoji"
                   title="Emoji"
                 >
@@ -220,7 +307,10 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
                 </button>
                 <button
                   type="button"
-                  className="rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400"
+                  onClick={() => setScheduleOpen((open) => !open)}
+                  className={`rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400 ${
+                    scheduleOpen ? 'bg-gold-500/10 text-gold-400' : ''
+                  }`}
                   aria-label="Schedule rate"
                   title="Schedule"
                 >
@@ -245,6 +335,49 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
                 </button>
               </div>
             </div>
+
+            {showEmojiPicker && (
+              <div className="mt-2 inline-flex flex-wrap gap-1 rounded-2xl border border-surface-border bg-surface-elevated px-3 py-2 text-xl">
+                {['🎮', '🔥', '😍', '😂', '😢', '👍', '👎', '⭐', '🤯', '❤️'].map(
+                  (emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      className="px-1"
+                      onClick={() => {
+                        setBody((prev) => prev + emoji)
+                        setShowEmojiPicker(false)
+                      }}
+                    >
+                      {emoji}
+                    </button>
+                  ),
+                )}
+              </div>
+            )}
+
+            {scheduleOpen && (
+              <div className="mt-3 flex items-center justify-end gap-2 text-xs text-[var(--color-text-muted)]">
+                <span>Schedule rate:</span>
+                <input
+                  type="datetime-local"
+                  value={scheduledAt ?? ''}
+                  onChange={(e) =>
+                    setScheduledAt(e.target.value ? e.target.value : null)
+                  }
+                  className="rounded-md border border-surface-border bg-surface-hover px-2 py-1 text-xs text-[var(--color-text)] outline-none focus:border-gold-500/60"
+                />
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleImageChange}
+            />
           </div>
         </div>
       </div>

@@ -19,6 +19,7 @@ type RateItem = {
   repostCount: number
   liked?: boolean
   bookmarked?: boolean
+  images?: string[]
 }
 
 /** API rate shape (has createdAt instead of timeAgo; liked/bookmarked from server when username in query) */
@@ -48,6 +49,7 @@ function apiRateToItem(r: ApiRate): RateItem {
     repostCount: r.repostCount ?? 0,
     liked: r.liked,
     bookmarked: r.bookmarked,
+    images: Array.isArray((r as any).images) ? (r as any).images : undefined,
   }
 }
 
@@ -124,7 +126,7 @@ export function Feed({
     fetchFollowing()
   }, [profile.username])
 
-  async function handleComposeSubmit(payload: { gameName: string; rating: number; body: string }) {
+  async function handleComposeSubmit(payload: { gameName: string; rating: number; body: string; images?: string[]; scheduledAt?: string | null }) {
     try {
       const res = await fetch(`${API_BASE}/api/rates`, {
         method: 'POST',
@@ -133,6 +135,8 @@ export function Feed({
           gameName: payload.gameName,
           rating: payload.rating,
           body: payload.body,
+          images: payload.images,
+          scheduledAt: payload.scheduledAt,
           raterName: profile.displayName,
           raterHandle: profile.username,
         }),

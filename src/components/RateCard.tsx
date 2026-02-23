@@ -33,6 +33,7 @@ export interface RateCardProps {
   likeCount?: number
   bookmarkCount?: number
   repostCount?: number
+  images?: string[]
   /** When set, show Follow/Following if rater is not current user */
   currentUsername?: string
   isFollowing?: boolean
@@ -85,6 +86,7 @@ export function RateCard({
   likeCount = 0,
   bookmarkCount = 0,
   repostCount = 0,
+  images = [],
   currentUsername,
   isFollowing = false,
   onFollow,
@@ -239,6 +241,28 @@ export function RateCard({
           <p className="mt-2 whitespace-pre-wrap text-[15px] leading-5 text-[var(--color-text)]">
             {body}
           </p>
+
+          {/* Image attachments */}
+          {Array.isArray(images) && images.length > 0 && (
+            <div
+              className={`mt-3 grid gap-2 ${
+                images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+              }`}
+            >
+              {images.slice(0, 4).map((url) => (
+                <div
+                  key={url}
+                  className="overflow-hidden rounded-2xl border border-surface-border/70 bg-surface-hover"
+                >
+                  <img
+                    src={url}
+                    alt="Rate attachment"
+                    className="max-h-64 w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Engagement row */}
           <div className="mt-3 flex items-center gap-6 text-[var(--color-text-muted)]">

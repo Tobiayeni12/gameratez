@@ -6,6 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import nodemailer from 'nodemailer'
+import multer from 'multer'
 import { Resend } from 'resend'
 import crypto from 'crypto'
 
@@ -13,6 +14,7 @@ const dnsPromises = dns.promises
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = path.join(__dirname, 'data')
+const UPLOADS_DIR = path.join(__dirname, 'uploads')
 const USERS_FILE = path.join(DATA_DIR, 'users.json')
 const RATES_FILE = path.join(DATA_DIR, 'rates.json')
 const FOLLOWS_FILE = path.join(DATA_DIR, 'follows.json')
@@ -24,6 +26,18 @@ const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json')
 const app = express()
 app.use(cors({ origin: true }))
 app.use(express.json())
+
+// Static files for uploaded images
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true })
+}
+app.use('/uploads', express.static(UPLOADS_DIR))
+
+// Multer for image uploads
+const upload = multer({
+  dest: UPLOADS_DIR,
+  limits: { fileSize: 5 * 1024 * 1024, files: 4 }, // 5MB per image, up to 4
+})
 
 const PORT = process.env.PORT || 3001
 const SITE_URL = process.env.SITE_URL || 'http://localhost:5173'
@@ -362,6 +376,7 @@ function enrichRatesWithLikes(ratesArray, currentUsername) {
 app.get('/api/rates', (req, res) => {
   try {
     const { tab, username, raterHandle, bookmarkedBy } = req.query
+    const now = Date.now()
     let list
     if (tab === 'following' && username && typeof username === 'string') {
       const u = username.trim().toLowerCase()
@@ -381,6 +396,11 @@ app.get('/api/rates', (req, res) => {
     } else {
       list = rates
     }
+    // Hide rates scheduled for the future (createdAt in the future)
+    list = list.filter((r) => {
+      const t = new Date(r.createdAt || 0).getTime()
+      return !Number.isNaN(t) && t <= now
+    })
     res.json(enrichRatesWithLikes(list, username || bookmarkedBy))
   } catch (err) {
     console.error(err)
@@ -395,6 +415,10 @@ app.get('/api/rates/:id', (req, res) => {
     const username = req.query.username
     const rate = rates.find((r) => r.id === id)
     if (!rate) return res.status(404).json({ error: 'Rate not found' })
+    const created = new Date(rate.createdAt || 0).getTime()
+    if (Number.isNaN(created) || created > Date.now()) {
+      return res.status(404).json({ error: 'Rate not found' })
+    }
     const list = enrichRatesWithLikes([rate], username)
     res.json(list[0])
   } catch (err) {
@@ -419,7 +443,10 @@ app.get('/api/search', (req, res) => {
           usersList.push({ username: (u.username || '').trim(), displayName: (u.displayName || '').trim() })
         }
       }
+      const now = Date.now()
       const ratesList = rates.filter((r) => {
+        const created = new Date(r.createdAt || 0).getTime()
+        if (Number.isNaN(created) || created > now) return false
         const game = (r.gameName || '').toLowerCase()
         const body = (r.body || '').toLowerCase()
         const handle = (r.raterHandle || '').toLowerCase()
@@ -439,7 +466,10 @@ app.get('/api/search', (req, res) => {
 app.get('/api/rates/trending', (req, res) => {
   try {
     const byGame = new Map() // key: lowercase game name, value: { count, displayName } (displayName from first seen)
+    const now = Date.now()
     for (const r of rates) {
+      const created = new Date(r.createdAt || 0).getTime()
+      if (Number.isNaN(created) || created > now) continue
       const name = (r.gameName || '').trim()
       const key = name.toLowerCase()
       if (!key) continue
@@ -712,7 +742,7 @@ app.post('/api/rates/:id/comments', (req, res) => {
 // POST /api/rates – create a new rate
 app.post('/api/rates', (req, res) => {
   try {
-    const { gameName, rating, body, raterName, raterHandle } = req.body
+    const { gameName, rating, body, raterName, raterHandle, images, poll, scheduledAt } = req.body
     if (!gameName || typeof gameName !== 'string' || gameName.trim() === '') {
       return res.status(400).json({ error: 'Game name required' })
     }
@@ -724,6 +754,44 @@ app.post('/api/rates', (req, res) => {
     }
     const name = String(raterName ?? '').trim() || 'Guest'
     const handle = String(raterHandle ?? '').trim() || 'guest'
+
+    // Optional: scheduled time (for now, store as createdAt in the future; frontend can decide what to do)
+    let createdAt = new Date().toISOString()
+    if (scheduledAt && typeof scheduledAt === 'string') {
+      const d = new Date(scheduledAt)
+      if (!Number.isNaN(d.getTime()) && d.getTime() > Date.now()) {
+        createdAt = d.toISOString()
+      }
+    }
+
+    // Optional: images (array of URLs served from /uploads)
+    const imageUrls =
+      Array.isArray(images) ?
+        images
+          .map((u) => (typeof u === 'string' ? u.trim() : ''))
+          .filter((u) => u.startsWith('/uploads/')) :
+        []
+
+    // Optional: poll (question + 2–4 options)
+    let pollData = undefined
+    if (poll && typeof poll === 'object') {
+      const question = String(poll.question ?? '').trim()
+      const rawOptions = Array.isArray(poll.options) ? poll.options : []
+      const optionTexts = rawOptions
+        .map((o) => (o && typeof o === 'object' ? String(o.text ?? '').trim() : ''))
+        .filter((t) => t.length > 0)
+      if (question && optionTexts.length >= 2 && optionTexts.length <= 4) {
+        pollData = {
+          question,
+          options: optionTexts.map((text, index) => ({
+            id: `opt-${index + 1}`,
+            text,
+            votes: 0,
+          })),
+          totalVotes: 0,
+        }
+      }
+    }
     const rate = {
       id: `rate-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       raterName: name,
@@ -731,11 +799,13 @@ app.post('/api/rates', (req, res) => {
       gameName: gameName.trim(),
       rating: Math.min(10, Math.max(1, Number(rating))),
       body: body.trim(),
-      createdAt: new Date().toISOString(),
+      createdAt,
       commentCount: 0,
       likeCount: 0,
       bookmarkCount: 0,
       repostCount: 0,
+      images: imageUrls,
+      poll: pollData,
     }
     rates.unshift(rate)
     saveRates()
@@ -895,6 +965,20 @@ app.post('/api/messages', (req, res) => {
     messages.push(msg)
     saveMessages()
     res.status(201).json(msg)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// POST /api/upload-image – upload a single image file and return its URL
+app.post('/api/upload-image', upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' })
+    }
+    const url = `/uploads/${req.file.filename}`
+    res.status(201).json({ url })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
