@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { UserProfile } from '../lib/profileStorage'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { RateCard } from './RateCard'
 import { RateComposeModal } from './RateComposeModal'
 
@@ -73,6 +74,7 @@ export function Feed({
   onComposeClose,
   className = '',
   onViewProfile,
+  onViewRate,
 }: FeedProps) {
   const { showError } = useErrorToast()
   const [rates, setRates] = useState<RateItem[]>([])
@@ -100,7 +102,7 @@ export function Feed({
       const params = new URLSearchParams()
       if (activeTab === 'following' && profile.username) params.set('tab', 'following')
       if (profile.username) params.set('username', profile.username)
-      const url = '/api/rates' + (params.toString() ? '?' + params.toString() : '')
+      const url = `${API_BASE}/api/rates` + (params.toString() ? '?' + params.toString() : '')
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to load rates')
       const data: ApiRate[] = await res.json()
@@ -124,7 +126,7 @@ export function Feed({
 
   async function handleComposeSubmit(payload: { gameName: string; rating: number; body: string }) {
     try {
-      const res = await fetch('/api/rates', {
+      const res = await fetch(`${API_BASE}/api/rates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -153,7 +155,7 @@ export function Feed({
     const username = profile.username?.trim()
     if (!username) return
     try {
-      const res = await fetch('/api/follow', {
+      const res = await fetch(`${API_BASE}/api/follow`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ followerUsername: username, followeeUsername: raterHandle }),
@@ -173,7 +175,7 @@ export function Feed({
     const username = profile.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -196,7 +198,7 @@ export function Feed({
     const username = profile.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -219,7 +221,7 @@ export function Feed({
     const username = profile.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -242,7 +244,7 @@ export function Feed({
     const username = profile.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -265,7 +267,7 @@ export function Feed({
     const username = profile.username?.trim()
     if (!username) return
     try {
-      const res = await fetch('/api/follow', {
+      const res = await fetch(`${API_BASE}/api/follow`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ followerUsername: username, followeeUsername: raterHandle }),

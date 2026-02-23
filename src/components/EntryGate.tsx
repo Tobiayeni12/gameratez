@@ -3,8 +3,7 @@ import { CreateAccountForm, type CreateAccountData } from './CreateAccountForm'
 import { PreferencesForm } from './PreferencesForm'
 import type { UserProfile } from '../lib/profileStorage'
 import { normalizeProfile, saveProfile, updateProfile } from '../lib/profileStorage'
-
-const API = '/api'
+import { API_BASE } from '../lib/apiBase'
 
 interface EntryGateProps {
   onProfileCreated: (profile: UserProfile) => void
@@ -54,7 +53,7 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
             setApiError(null)
             setSignupLoading(true)
             try {
-              const res = await fetch(`${API}/auth/signup`, {
+              const res = await fetch(`${API_BASE}/api/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: data.email, password: data.password }),
@@ -94,7 +93,7 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
           onSubmit={async (data) => {
             setApiError(null)
             if (completeToken) {
-              const res = await fetch(`${API}/auth/complete`, {
+              const res = await fetch(`${API_BASE}/api/auth/complete`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -156,7 +155,7 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
             setApiError(null)
             setSignInLoading(true)
             try {
-              const res = await fetch(`${API}/auth/login`, {
+              const res = await fetch(`${API_BASE}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),

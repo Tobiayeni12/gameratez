@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { UserProfile } from '../lib/profileStorage'
 import { RateCard } from './RateCard'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 
 function formatTimeAgo(createdAt: string): string {
   const ms = Date.now() - new Date(createdAt).getTime()
@@ -45,7 +46,7 @@ export function RateDetailPage({ rateId, profile, onBack, onViewProfile }: RateD
     setLoading(true)
     const params = new URLSearchParams()
     if (username) params.set('username', username)
-    fetch(`/api/rates/${encodeURIComponent(rateId)}?${params}`)
+    fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}?${params}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.status === 404 ? 'Rate not found' : 'Failed to load rate')
         return res.json()
@@ -61,7 +62,7 @@ export function RateDetailPage({ rateId, profile, onBack, onViewProfile }: RateD
   async function handleLike() {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -77,7 +78,7 @@ export function RateDetailPage({ rateId, profile, onBack, onViewProfile }: RateD
   async function handleUnlike() {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -93,7 +94,7 @@ export function RateDetailPage({ rateId, profile, onBack, onViewProfile }: RateD
   async function handleBookmark() {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -109,7 +110,7 @@ export function RateDetailPage({ rateId, profile, onBack, onViewProfile }: RateD
   async function handleUnbookmark() {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),

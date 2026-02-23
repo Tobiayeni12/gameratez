@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { UserProfile } from '../lib/profileStorage'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { BellIcon, HeartIcon } from './icons'
 
 type NotificationItem = {
@@ -90,7 +91,7 @@ export function NotificationsPage({ profile, onNotificationsUpdated }: Notificat
     }
     setError(null)
     try {
-      const res = await fetch(`/api/notifications?username=${encodeURIComponent(username)}`)
+      const res = await fetch(`${API_BASE}/api/notifications?username=${encodeURIComponent(username)}`)
       if (!res.ok) throw new Error('Failed to load notifications')
       const data = await res.json()
       setList(Array.isArray(data) ? data : [])
@@ -108,7 +109,7 @@ export function NotificationsPage({ profile, onNotificationsUpdated }: Notificat
 
   async function markRead(id: string) {
     try {
-      const res = await fetch(`/api/notifications/${encodeURIComponent(id)}/read`, {
+      const res = await fetch(`${API_BASE}/api/notifications/${encodeURIComponent(id)}/read`, {
         method: 'PATCH',
       })
       if (res.ok) {
@@ -123,7 +124,7 @@ export function NotificationsPage({ profile, onNotificationsUpdated }: Notificat
   async function markAllRead() {
     if (!username) return
     try {
-      const res = await fetch('/api/notifications/read-all', {
+      const res = await fetch(`${API_BASE}/api/notifications/read-all`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),

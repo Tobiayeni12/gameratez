@@ -3,6 +3,8 @@ import { CreateProfileForm, type ProfileFormData } from './CreateProfileForm'
 import type { UserProfile } from '../lib/profileStorage'
 import { updateProfile } from '../lib/profileStorage'
 import { RateCard } from './RateCard'
+import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 
 type ProfileRateItem = {
   id: string
@@ -17,6 +19,7 @@ type ProfileRateItem = {
   bookmarkCount: number
   repostCount: number
   liked?: boolean
+  bookmarked?: boolean
 }
 
 function formatTimeAgo(createdAt: string): string {
@@ -76,7 +79,7 @@ export function ProfilePage({
       setIsFollowingView(false)
       return
     }
-    fetch(`/api/following?username=${encodeURIComponent(profileUsername)}`)
+    fetch(`${API_BASE}/api/following?username=${encodeURIComponent(profileUsername)}`)
       .then((res) => (res.ok ? res.json() : []))
       .then((list: string[]) => {
         const v = viewUsername.trim().toLowerCase()
@@ -95,7 +98,7 @@ export function ProfilePage({
     setRatesError(null)
     const params = new URLSearchParams({ raterHandle })
     if (profileUsername) params.set('username', profileUsername)
-    fetch(`/api/rates?${params}`)
+    fetch(`${API_BASE}/api/rates?${params}`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Array<ProfileRateItem & { createdAt: string }>) => {
         setRates(
@@ -156,7 +159,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
     const username = profile?.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -179,7 +182,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
     const username = profile?.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -202,7 +205,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
     const username = profile?.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -226,7 +229,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
     const username = profile?.username?.trim()
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -286,7 +289,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
                       setFollowLoading(true)
                       try {
                         if (isFollowingView) {
-                          const res = await fetch('/api/follow', {
+                          const res = await fetch(`${API_BASE}/api/follow`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ followerUsername: profileUsername, followeeUsername: viewedUser.username }),
@@ -297,7 +300,7 @@ bookmarkCount: r.bookmarkCount ?? 0,
                             showError(data.error || 'Could not unfollow')
                           }
                         } else {
-                          const res = await fetch('/api/follow', {
+                          const res = await fetch(`${API_BASE}/api/follow`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ followerUsername: profileUsername, followeeUsername: viewedUser.username }),

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { UserProfile } from '../lib/profileStorage'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { MessageIcon } from './icons'
 
 type Conversation = {
@@ -54,7 +55,7 @@ export function MessagesPage({ profile, initialWithUsername, onClearInitialWith 
     }
     setConversationsLoading(true)
     try {
-      const res = await fetch(`/api/messages/conversations?username=${encodeURIComponent(profile.username!)}`)
+      const res = await fetch(`${API_BASE}/api/messages/conversations?username=${encodeURIComponent(profile.username!)}`)
       if (!res.ok) throw new Error('Failed to load conversations')
       const data = await res.json()
       setConversations(Array.isArray(data) ? data : [])
@@ -82,7 +83,7 @@ export function MessagesPage({ profile, initialWithUsername, onClearInitialWith 
       return
     }
     setMessagesLoading(true)
-    fetch(`/api/messages?username=${encodeURIComponent(profile.username!)}&with=${encodeURIComponent(selectedOther)}`)
+    fetch(`${API_BASE}/api/messages?username=${encodeURIComponent(profile.username!)}&with=${encodeURIComponent(selectedOther)}`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         setMessages(Array.isArray(data) ? data : [])
@@ -95,7 +96,7 @@ export function MessagesPage({ profile, initialWithUsername, onClearInitialWith 
     if (!username || !body.trim() || sending) return
     setSending(true)
     try {
-      const res = await fetch('/api/messages', {
+      const res = await fetch(`${API_BASE}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

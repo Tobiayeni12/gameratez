@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { UserProfile } from '../lib/profileStorage'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { SearchIcon } from './icons'
 import { RateCard } from './RateCard'
 
@@ -37,9 +38,11 @@ interface SearchPageProps {
   /** Initial query (e.g. from right sidebar) */
   initialQuery?: string
   onViewProfile: (username: string) => void
+  onViewRate?: (rateId: string) => void
 }
 
 export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRate }: SearchPageProps) {
+  const { showError } = useErrorToast()
   const [query, setQuery] = useState(initialQuery)
   const [users, setUsers] = useState<SearchUser[]>([])
   const [rates, setRates] = useState<SearchRate[]>([])
@@ -61,7 +64,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
     setLoading(true)
     setSearched(true)
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
+      const res = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(trimmed)}`)
       if (!res.ok) throw new Error('Search failed')
       const data = await res.json()
       setUsers(Array.isArray(data.users) ? data.users : [])
@@ -90,7 +93,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
   const handleLike = async (rateId: string) => {
     if (!currentUsername) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: profile.username }),
@@ -110,7 +113,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
   const handleUnlike = async (rateId: string) => {
     if (!currentUsername) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: profile.username }),
@@ -130,7 +133,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
   const handleBookmark = async (rateId: string) => {
     if (!currentUsername) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: profile.username }),
@@ -150,7 +153,7 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
   const handleUnbookmark = async (rateId: string) => {
     if (!currentUsername) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: profile.username }),

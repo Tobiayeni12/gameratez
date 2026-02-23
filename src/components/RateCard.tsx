@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { RateBubble } from './RateBubble'
 import {
   BlockIcon,
@@ -7,7 +8,6 @@ import {
   ChartIcon,
   CodeIcon,
   CommentIcon,
-  ControllerIcon,
   FlagIcon,
   HeartIcon,
   ListIcon,
@@ -100,6 +100,7 @@ export function RateCard({
   onRaterClick,
   onViewRate,
 }: RateCardProps) {
+  const { showError } = useErrorToast()
   const isOwnRate = currentUsername != null && currentUsername.trim().toLowerCase() === raterHandle.trim().toLowerCase()
   const showFollowButton = currentUsername != null && !isOwnRate && onFollow != null && onUnfollow != null
   const [menuOpen, setMenuOpen] = useState(false)
@@ -124,7 +125,7 @@ export function RateCard({
   useEffect(() => {
     if (!commentsOpen || !rateId) return
     setCommentsLoading(true)
-    fetch(`/api/rates/${encodeURIComponent(rateId)}/comments`)
+    fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/comments`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: CommentItem[]) => setComments(Array.isArray(data) ? data : []))
       .catch(() => setComments([]))
@@ -324,7 +325,7 @@ export function RateCard({
                     if (!text || replySubmitting) return
                     setReplySubmitting(true)
                     try {
-                      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/comments`, {
+                      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/comments`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

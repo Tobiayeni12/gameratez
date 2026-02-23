@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { SearchIcon } from './icons'
 
 type TrendingGame = { rank: number; gameName: string; count: number }
@@ -21,7 +22,7 @@ export function RightSidebar({ className = '', searchQuery = '', onSearchQueryCh
   const [trending, setTrending] = useState<TrendingGame[]>([])
 
   useEffect(() => {
-    fetch('/api/rates/trending')
+    fetch(`${API_BASE}/api/rates/trending`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => setTrending(Array.isArray(data) ? data : []))
       .catch(() => setTrending([]))

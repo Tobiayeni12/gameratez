@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { UserProfile } from '../lib/profileStorage'
 import { useErrorToast } from '../contexts/ErrorToastContext'
+import { API_BASE } from '../lib/apiBase'
 import { RateCard } from './RateCard'
 import { BookmarkIcon } from './icons'
 
@@ -32,9 +33,10 @@ function formatTimeAgo(createdAt: string): string {
 interface SavedFilesPageProps {
   profile: UserProfile
   onViewProfile?: (username: string) => void
+  onViewRate?: (rateId: string) => void
 }
 
-export function SavedFilesPage({ profile, onViewProfile }: SavedFilesPageProps) {
+export function SavedFilesPage({ profile, onViewProfile, onViewRate }: SavedFilesPageProps) {
   const { showError } = useErrorToast()
   const [rates, setRates] = useState<SavedRateItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -51,7 +53,7 @@ export function SavedFilesPage({ profile, onViewProfile }: SavedFilesPageProps) 
     setLoading(true)
     try {
       const params = new URLSearchParams({ bookmarkedBy: username, username })
-      const res = await fetch(`/api/rates?${params}`)
+      const res = await fetch(`${API_BASE}/api/rates?${params}`)
       if (!res.ok) throw new Error('Failed to load saved rates')
       const data = await res.json()
       setRates(
@@ -88,7 +90,7 @@ export function SavedFilesPage({ profile, onViewProfile }: SavedFilesPageProps) 
   async function handleUnbookmark(rateId: string) {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/bookmark`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -106,7 +108,7 @@ export function SavedFilesPage({ profile, onViewProfile }: SavedFilesPageProps) 
   async function handleLike(rateId: string) {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -127,7 +129,7 @@ export function SavedFilesPage({ profile, onViewProfile }: SavedFilesPageProps) 
   async function handleUnlike(rateId: string) {
     if (!username) return
     try {
-      const res = await fetch(`/api/rates/${encodeURIComponent(rateId)}/like`, {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/like`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),

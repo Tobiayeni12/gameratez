@@ -12,6 +12,7 @@ import { SearchPage } from './components/SearchPage'
 import { RightSidebar } from './components/RightSidebar'
 import { EntryGate } from './components/EntryGate'
 import { loadProfile, getDefaultProfile, type UserProfile } from './lib/profileStorage'
+import { API_BASE } from './lib/apiBase'
 
 function App() {
   const [composeOpen, setComposeOpen] = useState(false)
@@ -37,7 +38,7 @@ function App() {
       setNotificationUnreadCount(0)
       return
     }
-    fetch(`/api/notifications/unread-count?username=${encodeURIComponent(username)}`)
+    fetch(`${API_BASE}/api/notifications/unread-count?username=${encodeURIComponent(username)}`)
       .then((res) => (res.ok ? res.json() : { count: 0 }))
       .then((data) => setNotificationUnreadCount(typeof data.count === 'number' ? data.count : 0))
       .catch(() => setNotificationUnreadCount(0))
@@ -109,7 +110,7 @@ function App() {
             <NotificationsPage profile={currentProfile} onNotificationsUpdated={() => {
               const u = currentProfile?.username?.trim()
               if (!u) return
-              fetch(`/api/notifications/unread-count?username=${encodeURIComponent(u)}`)
+              fetch(`${API_BASE}/api/notifications/unread-count?username=${encodeURIComponent(u)}`)
                 .then((res) => (res.ok ? res.json() : { count: 0 }))
                 .then((data) => setNotificationUnreadCount(typeof data.count === 'number' ? data.count : 0))
                 .catch(() => {})
@@ -117,7 +118,7 @@ function App() {
           ) : view === 'messages' ? (
             <MessagesPage profile={currentProfile} initialWithUsername={viewMessagesWithUsername} onClearInitialWith={() => setViewMessagesWithUsername(null)} />
           ) : view === 'saved' ? (
-            <SavedFilesPage profile={currentProfile} onViewProfile={(username) => { setViewProfileUsername(username); setView('profile') }} onViewRate={(id) => { setViewRateId(id); setRateDetailReturnView('saved'); setView('rate-detail') }} />
+            <SavedFilesPage profile={currentProfile} onViewProfile={(username) => { setViewProfileUsername(username); setView('profile') }} onViewRate={(id: string) => { setViewRateId(id); setRateDetailReturnView('saved'); setView('rate-detail') }} />
           ) : view === 'search' ? (
             <SearchPage
               profile={currentProfile}
@@ -142,7 +143,7 @@ function App() {
               onComposeClose={() => setComposeOpen(false)}
               className="min-h-[calc(100vh-80px)] md:min-h-screen"
               onViewProfile={(username) => { setViewProfileUsername(username); setProfileReturnView('feed'); setView('profile') }}
-              onViewRate={(id) => { setViewRateId(id); setRateDetailReturnView('feed'); setView('rate-detail') }}
+              onViewRate={(id: string) => { setViewRateId(id); setRateDetailReturnView('feed'); setView('rate-detail') }}
             />
           )}
         </div>
