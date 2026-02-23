@@ -252,12 +252,12 @@ export function RateCard({
               {images.slice(0, 4).map((url) => (
                 <div
                   key={url}
-                  className="overflow-hidden rounded-2xl border border-surface-border/70 bg-surface-hover"
+                  className="overflow-hidden rounded-2xl border border-surface-border/70 bg-black"
                 >
                   <img
                     src={url}
                     alt="Rate attachment"
-                    className="max-h-64 w-full object-cover"
+                    className="w-full h-auto object-contain"
                   />
                 </div>
               ))}
