@@ -181,19 +181,22 @@ export function RateCard({
       </div>
 
       <div className="flex gap-3 pr-8">
-        {/* Avatar */}
-        <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400 ${
-            platform === 'ps'
-              ? 'ring-2 ring-blue-500/70 ring-offset-2 ring-offset-surface'
-              : platform === 'xbox'
-                ? 'ring-2 ring-emerald-500/70 ring-offset-2 ring-offset-surface'
-                : platform === 'pc'
-                  ? 'ring-2 ring-red-500/70 ring-offset-2 ring-offset-surface'
-                  : ''
-          }`}
-        >
-          <span className="text-lg font-semibold">{raterName[0]}</span>
+        {/* Avatar + platform dot */}
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400">
+            <span className="text-lg font-semibold">{raterName[0]}</span>
+          </div>
+          {platform && (
+            <span
+              className={`h-2 w-2 rounded-full ${
+                platform === 'ps'
+                  ? 'bg-blue-500'
+                  : platform === 'xbox'
+                    ? 'bg-emerald-500'
+                    : 'bg-red-500'
+              }`}
+            />
+          )}
         </div>
 
         <div className="min-w-0 flex-1">
