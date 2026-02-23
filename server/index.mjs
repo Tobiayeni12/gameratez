@@ -492,7 +492,7 @@ app.get('/api/rates/trending', (req, res) => {
   }
 })
 
-// GET /api/users/profile?username=xxx – public profile (displayName, username) for viewing another user
+// GET /api/users/profile?username=xxx – public profile (displayName, username, platform) for viewing another user
 app.get('/api/users/profile', (req, res) => {
   try {
     const username = req.query.username
@@ -502,7 +502,14 @@ app.get('/api/users/profile', (req, res) => {
     const u = username.trim().toLowerCase()
     for (const user of users.values()) {
       if (user && (user.username || '').toLowerCase() === u) {
-        return res.json({ username: (user.username || '').trim(), displayName: (user.displayName || '').trim() })
+        return res.json({
+          username: (user.username || '').trim(),
+          displayName: (user.displayName || '').trim(),
+          platform:
+            user.platform === 'ps' || user.platform === 'xbox' || user.platform === 'pc'
+              ? user.platform
+              : '',
+        })
       }
     }
     res.status(404).json({ error: 'User not found' })

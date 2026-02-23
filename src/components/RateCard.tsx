@@ -89,7 +89,6 @@ export function RateCard({
   bookmarkCount = 0,
   repostCount = 0,
   images = [],
-  platform,
   currentUsername,
   isFollowing = false,
   onFollow,
@@ -104,6 +103,7 @@ export function RateCard({
   onUnbookmark,
   onRaterClick,
   onViewRate,
+  platform,
 }: RateCardProps) {
   const { showError } = useErrorToast()
   const isOwnRate = currentUsername != null && currentUsername.trim().toLowerCase() === raterHandle.trim().toLowerCase()
@@ -182,7 +182,17 @@ export function RateCard({
 
       <div className="flex gap-3 pr-8">
         {/* Avatar */}
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400">
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400 ${
+            platform === 'ps'
+              ? 'ring-2 ring-blue-500/70 ring-offset-2 ring-offset-surface'
+              : platform === 'xbox'
+                ? 'ring-2 ring-emerald-500/70 ring-offset-2 ring-offset-surface'
+                : platform === 'pc'
+                  ? 'ring-2 ring-red-500/70 ring-offset-2 ring-offset-surface'
+                  : ''
+          }`}
+        >
           <span className="text-lg font-semibold">{raterName[0]}</span>
         </div>
 
@@ -242,10 +252,10 @@ export function RateCard({
               <span
                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
                   platform === 'ps'
-                    ? 'bg-blue-600/40 text-blue-300 border border-blue-500/50'
+                    ? 'bg-blue-600/40 text-blue-300 border border-blue-500/60'
                     : platform === 'xbox'
-                      ? 'bg-emerald-600/40 text-emerald-300 border border-emerald-500/50'
-                      : 'bg-purple-700/40 text-purple-200 border border-purple-500/50'
+                      ? 'bg-emerald-600/40 text-emerald-300 border border-emerald-500/60'
+                      : 'bg-red-700/40 text-red-200 border border-red-500/60'
                 }`}
               >
                 {platform === 'ps' ? 'PS' : platform === 'xbox' ? 'Xbox' : 'PC'}

@@ -57,7 +57,7 @@ export function ProfilePage({
   const [rates, setRates] = useState<ProfileRateItem[]>([])
   const [ratesLoading, setRatesLoading] = useState(true)
   const [ratesError, setRatesError] = useState<string | null>(null)
-  const [viewedUser, setViewedUser] = useState<{ username: string; displayName: string } | null>(null)
+  const [viewedUser, setViewedUser] = useState<{ username: string; displayName: string; platform?: 'ps' | 'xbox' | 'pc' | '' } | null>(null)
   const [isFollowingView, setIsFollowingView] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
 
@@ -68,7 +68,15 @@ export function ProfilePage({
     if (viewUsername != null && viewUsername.trim() !== '') {
       fetch(`/api/users/profile?username=${encodeURIComponent(viewUsername)}`)
         .then((res) => (res.ok ? res.json() : null))
-        .then((data) => (data ? setViewedUser({ username: data.username, displayName: data.displayName }) : setViewedUser(null)))
+        .then((data) =>
+          data
+            ? setViewedUser({
+                username: data.username,
+                displayName: data.displayName,
+                platform: data.platform ?? '',
+              })
+            : setViewedUser(null),
+        )
         .catch(() => setViewedUser(null))
     } else {
       setViewedUser(null)
@@ -258,6 +266,19 @@ export function ProfilePage({
   const showFollowMessage = isViewingOther && profile && viewedUser && profileUsername !== (viewedUser?.username ?? '').toLowerCase()
 
   if (profile || isViewingOther) {
+    const displayPlatform =
+      isViewingOther && viewedUser
+        ? viewedUser.platform ?? ''
+        : profile?.platform ?? ''
+
+    const avatarRingClasses =
+      displayPlatform === 'ps'
+        ? 'ring-4 ring-blue-500/70 ring-offset-2 ring-offset-surface'
+        : displayPlatform === 'xbox'
+          ? 'ring-4 ring-emerald-500/70 ring-offset-2 ring-offset-surface'
+          : displayPlatform === 'pc'
+            ? 'ring-4 ring-red-500/70 ring-offset-2 ring-offset-surface'
+            : ''
     return (
       <div className="min-h-full border-x border-surface-border px-4 py-6 md:px-6">
         {onBack && (
@@ -271,7 +292,9 @@ export function ProfilePage({
         )}
         <div className="rounded-2xl border border-surface-border bg-surface-elevated p-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-surface-hover text-3xl font-bold text-gold-400">
+            <div
+              className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-surface-hover text-3xl font-bold text-gold-400 ${avatarRingClasses}`}
+            >
               {(displayUser?.displayName ?? viewedUser?.displayName ?? '?')[0]?.toUpperCase() ?? '?'}
             </div>
             <div className="min-w-0 flex-1">
