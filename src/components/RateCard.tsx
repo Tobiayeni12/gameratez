@@ -225,7 +225,7 @@ export function RateCard({
               </span>
             )}
             {/* Platform indicator — at a glance which platform they play on */}
-            {platform && platform !== '' && (
+            {platform ? (
               <span
                 className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/95"
                 style={{
@@ -240,7 +240,7 @@ export function RateCard({
               >
                 {platform === 'ps' ? 'PS' : platform === 'xbox' ? 'Xbox' : 'PC'}
               </span>
-            )}
+            ) : null}
             <span className="shrink-0 text-[var(--color-text-muted)]">·</span>
             <span className="shrink-0 text-[var(--color-text-muted)]">
               {timeAgo}
