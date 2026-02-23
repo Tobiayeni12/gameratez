@@ -40,24 +40,24 @@ export function LeftSidebar({
 }: LeftSidebarProps) {
   return (
     <aside
-      className={`flex flex-col border-r border-surface-border md:items-stretch ${className}`}
+      className={`flex h-full flex-col border-r border-surface-border/60 bg-surface/70 backdrop-blur-xl md:items-stretch ${className}`}
     >
-      <div className="flex h-full w-full flex-col items-stretch gap-2 px-2 py-2 md:px-4">
+      <div className="flex h-full w-full flex-col items-stretch gap-3 px-3 py-4 md:px-5">
         {/* Logo */}
         <a
           href="/"
-          className="flex items-center justify-start rounded-full p-3 transition-colors hover:bg-surface-hover"
+          className="flex items-center justify-start rounded-2xl px-3 py-2 transition-colors hover:bg-surface-hover/70"
           aria-label="Gameratez Home"
         >
           <img
             src="/gameratez-logo.png"
             alt="Gameratez"
-            className="h-20 w-auto max-w-[426px] object-contain md:h-32 md:max-w-[640px]"
+            className="h-16 w-auto max-w-[360px] object-contain md:h-24 md:max-w-[520px]"
           />
         </a>
 
         {/* Nav — For you, Following, Notifications, Profile */}
-        <nav className="flex flex-col gap-1">
+        <nav className="mt-2 flex flex-col gap-1.5">
           <button
             type="button"
             onClick={onFeedClick}
@@ -112,14 +112,14 @@ export function LeftSidebar({
         <button
           type="button"
           onClick={onRateClick}
-          className="mt-2 w-full rounded-full bg-gold-500 py-3.5 font-bold text-black transition-colors hover:bg-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 focus:ring-offset-surface md:min-w-[220px]"
+          className="mt-4 w-full rounded-full bg-gradient-to-r from-gold-500 via-gold-400 to-[var(--color-accent)] py-3.5 text-[15px] font-bold text-black shadow-gold-glow transition-transform transition-colors hover:brightness-110 hover:shadow-lg active:scale-95 md:min-w-[220px]"
         >
-          Rate
+          Rate a game
         </button>
 
         {/* User profile at bottom — use saved account */}
-        <div className="mt-auto flex w-full items-center gap-3 rounded-full p-3 transition-colors hover:bg-surface-hover">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-gold-400">
+        <div className="mt-auto flex w-full items-center gap-3 rounded-2xl bg-surface-elevated/60 p-3 ring-1 ring-surface-border/60 transition-colors hover:bg-surface-hover/70">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-hover text-gold-400 shadow-gold-bubble">
             <span className="text-sm font-semibold">
               {profile.displayName[0]?.toUpperCase() ?? '?'}
             </span>

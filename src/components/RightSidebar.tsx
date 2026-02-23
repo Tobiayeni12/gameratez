@@ -33,7 +33,7 @@ export function RightSidebar({ className = '', searchQuery = '', onSearchQueryCh
       className={`hidden flex-col gap-4 overflow-y-auto pl-4 pr-4 pt-2 lg:flex lg:min-w-[300px] xl:min-w-[var(--right-sidebar-width)] ${className}`}
     >
       {/* Search */}
-      <div className="sticky top-0 z-10 bg-surface pt-1 pb-2">
+      <div className="sticky top-0 z-10 bg-surface/95 pb-3 pt-1 backdrop-blur-xl">
         <div className="relative">
           <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--color-text-muted)]" />
           <input
@@ -42,13 +42,13 @@ export function RightSidebar({ className = '', searchQuery = '', onSearchQueryCh
             onChange={(e) => onSearchQueryChange?.(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') onSearchNavigate?.() }}
             placeholder="Search games & raters"
-            className="w-full rounded-full border border-surface-border bg-surface-elevated py-3 pl-12 pr-4 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-gold-500/50 focus:outline-none focus:ring-1 focus:ring-gold-500/50"
+            className="w-full rounded-full border border-surface-border/70 bg-surface-elevated/80 py-3 pl-12 pr-4 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] shadow-sm focus:border-gold-500/50 focus:outline-none focus:ring-1 focus:ring-gold-500/50"
           />
         </div>
       </div>
 
       {/* Premium card */}
-      <div className="rounded-2xl border border-surface-border bg-surface-elevated p-4">
+      <div className="rounded-2xl border border-surface-border/70 bg-gradient-to-br from-surface-elevated/80 via-surface/90 to-surface-elevated/80 p-4 shadow-gold-glow/40">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-xl font-bold text-[var(--color-text)]">
             Subscribe to Premium
@@ -58,7 +58,7 @@ export function RightSidebar({ className = '', searchQuery = '', onSearchQueryCh
           </span>
         </div>
         <p className="mb-4 text-sm text-[var(--color-text-muted)]">
-          Get ad-free experience, see your analytics, and unlock exclusive rater badges.
+          Get ad-free experience, unlock gamer badges, and see deep rating analytics.
         </p>
         <button
           type="button"
@@ -70,7 +70,7 @@ export function RightSidebar({ className = '', searchQuery = '', onSearchQueryCh
       </div>
 
       {/* Trending games — most rated, 1st to 5th */}
-      <div className="rounded-2xl border border-surface-border bg-surface-elevated overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-surface-border/70 bg-surface-elevated/90">
         <h2 className="px-4 py-3 text-xl font-bold text-[var(--color-text)]">
           Trending games
         </h2>

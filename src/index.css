@@ -6,12 +6,14 @@
   --color-gold: #eab308;
   --color-gold-light: #facc15;
   --color-gold-dim: rgba(234, 179, 8, 0.15);
-  --color-surface: #0a0a0a;
-  --color-surface-elevated: #161616;
-  --color-surface-hover: #1f1f1f;
-  --color-border: #2f2f2f;
-  --color-text: #e7e9ea;
-  --color-text-muted: #71767b;
+  --color-accent: #22d3ee; /* cyan */
+  --color-accent-soft: rgba(34, 211, 238, 0.18);
+  --color-surface: #050712;
+  --color-surface-elevated: #111827;
+  --color-surface-hover: #1f2937;
+  --color-border: #273549;
+  --color-text: #e5e7eb;
+  --color-text-muted: #6b7280;
   --sidebar-width: 275px;
   --feed-max-width: 600px;
   --right-sidebar-width: 350px;
@@ -22,16 +24,17 @@
 }
 
 html {
-  background: #0a0a0a;
+  background: radial-gradient(circle at top, #111827 0, #020617 55%, #000000 100%);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   min-height: calc(100vh + env(safe-area-inset-bottom));
-  background: #0a0a0a;
-  background: var(--color-surface);
-  color: #e7e9ea;
+  background:
+    radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.14), transparent 55%),
+    radial-gradient(circle at 100% 0, rgba(234, 179, 8, 0.12), transparent 55%),
+    #020617;
   color: var(--color-text);
   font-family: "Source Sans Pro", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -39,15 +42,15 @@ body {
 
 #root {
   min-height: 100vh;
-  background: var(--color-surface);
+  background: transparent;
 }
 
 @layer components {
   .nav-item {
-    @apply flex items-center gap-3 rounded-full px-4 py-3 text-xl font-normal text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-hover)];
+    @apply flex items-center gap-3 rounded-full px-4 py-3 text-lg font-normal text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text)];
   }
   .nav-item.active {
-    @apply font-semibold text-gold-400;
+    @apply font-semibold text-[var(--color-text)] bg-gradient-to-r from-gold-500/20 via-[var(--color-accent-soft)] to-gold-500/20 shadow-gold-glow text-gold-400;
   }
   .font-agency {
     font-family: "Agency FB", "Agency", sans-serif;
