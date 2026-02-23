@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Environment (do not commit API keys)
+.env
+.env.local
+.env.*.local
+
+# Persisted user data (emails, hashes – do not commit)
+server/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.DS_Store
+*.local

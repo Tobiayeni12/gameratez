@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-gold: #eab308;
+  --color-gold-light: #facc15;
+  --color-gold-dim: rgba(234, 179, 8, 0.15);
+  --color-surface: #0a0a0a;
+  --color-surface-elevated: #161616;
+  --color-surface-hover: #1f1f1f;
+  --color-border: #2f2f2f;
+  --color-text: #e7e9ea;
+  --color-text-muted: #71767b;
+  --sidebar-width: 275px;
+  --feed-max-width: 600px;
+  --right-sidebar-width: 350px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #0a0a0a;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: calc(100vh + env(safe-area-inset-bottom));
+  background: #0a0a0a;
+  background: var(--color-surface);
+  color: #e7e9ea;
+  color: var(--color-text);
+  font-family: "Source Sans Pro", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--color-surface);
+}
+
+@layer components {
+  .nav-item {
+    @apply flex items-center gap-3 rounded-full px-4 py-3 text-xl font-normal text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-hover)];
+  }
+  .nav-item.active {
+    @apply font-semibold text-gold-400;
+  }
+  .font-agency {
+    font-family: "Agency FB", "Agency", sans-serif;
+  }
+}
