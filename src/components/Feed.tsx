@@ -294,62 +294,32 @@ export function Feed({
     }
   }
 
-  const platformLabel =
-    profile.platform === 'ps'
-      ? 'PlayStation'
-      : profile.platform === 'xbox'
-        ? 'Xbox'
-        : profile.platform === 'pc'
-          ? 'PC'
-          : null
-
   return (
     <main className={`flex min-h-0 flex-1 flex-col border-x border-surface-border ${className}`}>
       {/* Tabs — For you | Following */}
-      <div className="sticky top-0 z-10 border-b border-surface-border bg-surface/95 backdrop-blur">
-        <div className="flex">
-          <button
-            type="button"
-            onClick={() => onTabChange('for-you')}
-            className="flex-1 border-b-2 border-transparent py-4 text-center font-semibold transition-colors hover:bg-surface-hover hover:text-[var(--color-accent)]"
-            style={{
-              color: activeTab === 'for-you' ? 'var(--color-text)' : 'var(--color-text-muted)',
-              borderBottom: activeTab === 'for-you' ? '2px solid var(--color-gold)' : '2px solid transparent',
-            }}
-          >
-            For you
-          </button>
-          <button
-            type="button"
-            onClick={() => onTabChange('following')}
-            className="flex-1 border-b-2 border-transparent py-4 text-center font-semibold transition-colors hover:bg-surface-hover hover:text-[var(--color-accent)]"
-            style={{
-              color: activeTab === 'following' ? 'var(--color-text)' : 'var(--color-text-muted)',
-              borderBottom: activeTab === 'following' ? '2px solid var(--color-gold)' : '2px solid transparent',
-            }}
-          >
-            Following
-          </button>
-        </div>
-        {/* Your primary platform — always visible while scrolling */}
-        {platformLabel && (
-          <div className="flex justify-center px-4 pb-2.5 pt-0.5">
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white/95"
-              style={{
-                background:
-                  profile.platform === 'ps'
-                    ? 'linear-gradient(135deg, #2563eb, #1d4ed8)'
-                    : profile.platform === 'xbox'
-                      ? 'linear-gradient(135deg, #16a34a, #15803d)'
-                      : 'linear-gradient(135deg, #dc2626, #b91c1c)',
-              }}
-            >
-              <span className="text-white/80">Playing on</span>
-              <span>{platformLabel}</span>
-            </span>
-          </div>
-        )}
+      <div className="sticky top-0 z-10 flex border-b border-surface-border bg-surface/95 backdrop-blur">
+        <button
+          type="button"
+          onClick={() => onTabChange('for-you')}
+          className="flex-1 border-b-2 border-transparent py-4 text-center font-semibold transition-colors hover:bg-surface-hover hover:text-[var(--color-accent)]"
+          style={{
+            color: activeTab === 'for-you' ? 'var(--color-text)' : 'var(--color-text-muted)',
+            borderBottom: activeTab === 'for-you' ? '2px solid var(--color-gold)' : '2px solid transparent',
+          }}
+        >
+          For you
+        </button>
+        <button
+          type="button"
+          onClick={() => onTabChange('following')}
+          className="flex-1 border-b-2 border-transparent py-4 text-center font-semibold transition-colors hover:bg-surface-hover hover:text-[var(--color-accent)]"
+          style={{
+            color: activeTab === 'following' ? 'var(--color-text)' : 'var(--color-text-muted)',
+            borderBottom: activeTab === 'following' ? '2px solid var(--color-gold)' : '2px solid transparent',
+          }}
+        >
+          Following
+        </button>
       </div>
 
       {/* Compose — click to open rate modal */}

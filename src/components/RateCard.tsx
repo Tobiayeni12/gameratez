@@ -224,6 +224,23 @@ export function RateCard({
                 @{raterHandle}
               </span>
             )}
+            {/* Platform indicator — at a glance which platform they play on */}
+            {platform && platform !== '' && (
+              <span
+                className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/95"
+                style={{
+                  background:
+                    platform === 'ps'
+                      ? 'linear-gradient(135deg, #2563eb, #1d4ed8)'
+                      : platform === 'xbox'
+                        ? 'linear-gradient(135deg, #16a34a, #15803d)'
+                        : 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                }}
+                title={platform === 'ps' ? 'PlayStation' : platform === 'xbox' ? 'Xbox' : 'PC'}
+              >
+                {platform === 'ps' ? 'PS' : platform === 'xbox' ? 'Xbox' : 'PC'}
+              </span>
+            )}
             <span className="shrink-0 text-[var(--color-text-muted)]">·</span>
             <span className="shrink-0 text-[var(--color-text-muted)]">
               {timeAgo}
