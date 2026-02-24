@@ -137,6 +137,30 @@ export function RateCard({
       .finally(() => setCommentsLoading(false))
   }, [commentsOpen, rateId])
 
+  async function handleReport() {
+    const reporter = currentUsername?.trim()
+    if (!reporter) {
+      showError('You need an account to report rates.')
+      return
+    }
+    try {
+      const res = await fetch(`${API_BASE}/api/rates/${encodeURIComponent(rateId)}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: reporter }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        showError(data.error || 'Could not report rate')
+        return
+      }
+    } catch {
+      showError('Could not report rate')
+    } finally {
+      setMenuOpen(false)
+    }
+  }
+
   const menuItems = [
     { icon: NotInterestedIcon, label: 'Not interested in this rate' },
     { icon: PersonAddIcon, label: `Follow @${raterHandle}` },
@@ -192,6 +216,11 @@ export function RateCard({
                 key={label}
                 type="button"
                 className="flex w-full items-center gap-3 px-4 py-3 text-left text-[15px] text-[var(--color-text)] transition-colors hover:bg-surface-hover"
+                onClick={() => {
+                  if (label === 'Report rate') {
+                    void handleReport()
+                  }
+                }}
               >
                 <Icon className="h-5 w-5 shrink-0 text-[var(--color-text-muted)]" />
                 <span>{label}</span>

@@ -4,6 +4,7 @@ import { useErrorToast } from '../contexts/ErrorToastContext'
 import { API_BASE } from '../lib/apiBase'
 import { RateCard } from './RateCard'
 import { BookmarkIcon } from './icons'
+import { RateCardSkeleton } from './RateCardSkeleton'
 
 type SavedRateItem = {
   id: string
@@ -166,7 +167,11 @@ export function SavedFilesPage({ profile, onViewProfile, onViewRate }: SavedFile
             </p>
           </div>
         ) : loading ? (
-          <p className="py-6 text-center text-sm text-[var(--color-text-muted)]">Loading saved files…</p>
+          <div className="space-y-1">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <RateCardSkeleton key={idx} />
+            ))}
+          </div>
         ) : rates.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-12 text-center">
             <BookmarkIcon className="h-12 w-12 text-[var(--color-text-muted)]" />

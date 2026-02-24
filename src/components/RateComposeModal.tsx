@@ -299,9 +299,10 @@ export function RateComposeModal({ profile, isOpen, onClose, onSubmit }: RateCom
                 </button>
                 <button
                   type="button"
-                  className="rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400"
-                  aria-label="Add poll"
-                  title="Poll"
+                  disabled
+                  className="cursor-not-allowed rounded-full p-2 text-[var(--color-text-muted)] opacity-60"
+                  aria-label="Polls coming soon"
+                  title="Polls coming soon"
                 >
                   <PollIcon className="h-5 w-5" />
                 </button>

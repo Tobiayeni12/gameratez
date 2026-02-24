@@ -4,6 +4,7 @@ import { useErrorToast } from '../contexts/ErrorToastContext'
 import { API_BASE } from '../lib/apiBase'
 import { SearchIcon } from './icons'
 import { RateCard } from './RateCard'
+import { RateCardSkeleton } from './RateCardSkeleton'
 
 type SearchUser = { username: string; displayName: string }
 type SearchRate = {
@@ -190,7 +191,11 @@ export function SearchPage({ profile, initialQuery = '', onViewProfile, onViewRa
 
       <div className="flex-1 overflow-y-auto p-4">
         {loading && (
-          <p className="py-4 text-center text-sm text-[var(--color-text-muted)]">Searching…</p>
+          <div className="space-y-1">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <RateCardSkeleton key={idx} />
+            ))}
+          </div>
         )}
         {!loading && query.trim() && !searched && (
           <p className="py-4 text-center text-sm text-[var(--color-text-muted)]">Type to search.</p>

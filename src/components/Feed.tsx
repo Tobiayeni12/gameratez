@@ -4,6 +4,7 @@ import { useErrorToast } from '../contexts/ErrorToastContext'
 import { API_BASE } from '../lib/apiBase'
 import { RateCard } from './RateCard'
 import { RateComposeModal } from './RateComposeModal'
+import { RateCardSkeleton } from './RateCardSkeleton'
 
 type RateItem = {
   id: string
@@ -85,6 +86,7 @@ export function Feed({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [followingSet, setFollowingSet] = useState<Set<string>>(new Set())
+  const [platformFilter, setPlatformFilter] = useState<'all' | 'ps' | 'xbox' | 'pc'>('all')
 
   async function fetchFollowing() {
     const username = profile.username?.trim()
@@ -106,6 +108,8 @@ export function Feed({
       const params = new URLSearchParams()
       if (activeTab === 'following' && profile.username) params.set('tab', 'following')
       if (profile.username) params.set('username', profile.username)
+       // Optional platform filter for feed
+      if (platformFilter !== 'all') params.set('platform', platformFilter)
       const url = `${API_BASE}/api/rates` + (params.toString() ? '?' + params.toString() : '')
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to load rates')
@@ -122,7 +126,7 @@ export function Feed({
 
   useEffect(() => {
     fetchRates()
-  }, [activeTab, profile.username])
+  }, [activeTab, profile.username, platformFilter])
 
   useEffect(() => {
     fetchFollowing()
@@ -322,6 +326,52 @@ export function Feed({
         </button>
       </div>
 
+      {/* Platform filter row */}
+      <div className="flex items-center gap-2 border-b border-surface-border bg-surface/95 px-4 py-2 text-xs text-[var(--color-text-muted)]">
+        <span className="mr-1 hidden shrink-0 text-[11px] uppercase tracking-wide text-[var(--color-text-muted)] sm:inline">
+          Filter by platform:
+        </span>
+        {[
+          { id: 'all' as const, label: 'All' },
+          { id: 'ps' as const, label: 'PlayStation' },
+          { id: 'xbox' as const, label: 'Xbox' },
+          { id: 'pc' as const, label: 'PC' },
+        ].map((opt) => {
+          const isActive = platformFilter === opt.id
+          const baseClasses =
+            'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors'
+          let colorClasses =
+            'border border-surface-border bg-surface-hover/40 text-[var(--color-text-muted)] hover:border-gold-500/40 hover:text-gold-400'
+          if (opt.id === 'ps') {
+            colorClasses = isActive
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm'
+              : 'border border-blue-500/40 text-blue-300/90 hover:bg-blue-500/10'
+          } else if (opt.id === 'xbox') {
+            colorClasses = isActive
+              ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-sm'
+              : 'border border-emerald-500/40 text-emerald-300/90 hover:bg-emerald-500/10'
+          } else if (opt.id === 'pc') {
+            colorClasses = isActive
+              ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-sm'
+              : 'border border-red-500/40 text-red-300/90 hover:bg-red-500/10'
+          } else if (opt.id === 'all') {
+            colorClasses = isActive
+              ? 'border border-gold-500/80 bg-gold-500/20 text-gold-200 shadow-gold-glow'
+              : 'border border-surface-border bg-surface-hover/40 text-[var(--color-text-muted)] hover:border-gold-500/50 hover:text-gold-300'
+          }
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => setPlatformFilter(opt.id)}
+              className={`${baseClasses} ${colorClasses}`}
+            >
+              {opt.label}
+            </button>
+          )
+        })}
+      </div>
+
       {/* Compose — click to open rate modal */}
       <button
         type="button"
@@ -353,7 +403,11 @@ export function Feed({
           </p>
         )}
         {loading ? (
-          <p className="p-6 text-center text-sm text-[var(--color-text-muted)]">Loading feed…</p>
+          <div className="space-y-1 p-3">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <RateCardSkeleton key={idx} />
+            ))}
+          </div>
         ) : rates.length === 0 ? (
           <p className="p-6 text-center text-sm text-[var(--color-text-muted)]">
             {activeTab === 'following'
