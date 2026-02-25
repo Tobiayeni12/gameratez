@@ -105,7 +105,7 @@ export function RateCard({
   onViewRate,
   platform,
 }: RateCardProps) {
-  const { showError } = useErrorToast()
+  const { showError, showSuccess } = useErrorToast()
   const isOwnRate = currentUsername != null && currentUsername.trim().toLowerCase() === raterHandle.trim().toLowerCase()
   const showFollowButton = currentUsername != null && !isOwnRate && onFollow != null && onUnfollow != null
   const [menuOpen, setMenuOpen] = useState(false)
@@ -434,9 +434,11 @@ export function RateCard({
                       })
                       const data = await res.json().catch(() => ({}))
                       if (res.ok && data.comment) {
-                        setComments((prev) => [...prev, data.comment])
+                        const newComments = [...comments, data.comment]
+                        setComments(newComments)
                         setReplyText('')
-                        onCommentAdded?.(data.commentCount ?? comments.length + 1)
+                        onCommentAdded?.(data.commentCount ?? newComments.length)
+                        showSuccess('Comment posted')
                       } else {
                         showError(data.error || 'Could not post reply')
                       }

@@ -1215,7 +1215,12 @@ app.post('/api/rates/:id/comments', async (req, res) => {
         }
       }
 
-      const commentCount = Number((await query('SELECT COUNT(*)::int AS c FROM comments WHERE rate_id = $1', [rateId])).rows[0]?.c ?? 0)
+      let commentCount = null
+      try {
+        commentCount = Number((await query('SELECT COUNT(*)::int AS c FROM comments WHERE rate_id = $1', [rateId])).rows[0]?.c ?? 0)
+      } catch (countErr) {
+        console.error('Failed to get comment count:', countErr)
+      }
       return res.status(201).json({ comment, commentCount })
     }
     if (!rates.some((r) => r.id === rateId)) return res.status(404).json({ error: 'Rate not found' })

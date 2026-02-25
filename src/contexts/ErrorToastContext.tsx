@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useRef, useState } from 'react'
 
 type ErrorToastContextValue = {
   showError: (message: string) => void
+  showSuccess: (message: string) => void
 }
 
 const ErrorToastContext = createContext<ErrorToastContextValue | null>(null)
@@ -10,11 +11,23 @@ const AUTO_DISMISS_MS = 5000
 
 export function ErrorToastProvider({ children }: { children: React.ReactNode }) {
   const [message, setMessage] = useState<string | null>(null)
+  const [isError, setIsError] = useState(true)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const showError = useCallback((msg: string) => {
     if (timerRef.current) clearTimeout(timerRef.current)
     setMessage(msg ?? 'Something went wrong')
+    setIsError(true)
+    timerRef.current = setTimeout(() => {
+      setMessage(null)
+      timerRef.current = null
+    }, AUTO_DISMISS_MS)
+  }, [])
+
+  const showSuccess = useCallback((msg: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setMessage(msg ?? 'Success')
+    setIsError(false)
     timerRef.current = setTimeout(() => {
       setMessage(null)
       timerRef.current = null
@@ -30,18 +43,28 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
   }, [])
 
   return (
-    <ErrorToastContext.Provider value={{ showError }}>
+    <ErrorToastContext.Provider value={{ showError, showSuccess }}>
       {children}
       {message && (
         <div
           role="alert"
-          className="fixed bottom-6 left-1/2 z-[100] flex max-w-[min(90vw,400px)] -translate-x-1/2 items-center gap-3 rounded-xl border border-red-500/30 bg-red-950/95 px-4 py-3 shadow-lg backdrop-blur-sm"
+          className={`fixed bottom-6 left-1/2 z-[100] flex max-w-[min(90vw,400px)] -translate-x-1/2 items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm ${
+            isError
+              ? 'border-red-500/30 bg-red-950/95'
+              : 'border-green-500/30 bg-green-950/95'
+          }`}
         >
-          <span className="flex-1 text-sm font-medium text-red-200">{message}</span>
+          <span className={`flex-1 text-sm font-medium ${
+            isError ? 'text-red-200' : 'text-green-200'
+          }`}>{message}</span>
           <button
             type="button"
             onClick={dismiss}
-            className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-white"
+            className={`shrink-0 rounded-lg px-2 py-1 text-xs font-medium hover:bg-opacity-20 hover:text-white ${
+              isError
+                ? 'text-red-300 hover:bg-red-500'
+                : 'text-green-300 hover:bg-green-500'
+            }`}
             aria-label="Dismiss"
           >
             Dismiss
