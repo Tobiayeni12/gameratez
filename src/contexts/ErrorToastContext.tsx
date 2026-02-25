@@ -48,14 +48,14 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
       {message && (
         <div
           role="alert"
-          className={`fixed bottom-6 left-1/2 z-[100] flex max-w-[min(90vw,400px)] -translate-x-1/2 items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm ${
+          className={`fixed top-6 left-1/2 z-[100] flex max-w-[min(90vw,400px)] -translate-x-1/2 items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm ${
             isError
               ? 'border-red-500/30 bg-red-950/95'
-              : 'border-green-500/30 bg-green-950/95'
+              : 'border-green-500/30 bg-green-100/95 text-green-900'
           }`}
         >
           <span className={`flex-1 text-sm font-medium ${
-            isError ? 'text-red-200' : 'text-green-200'
+            isError ? 'text-red-200' : 'text-green-900'
           }`}>{message}</span>
           <button
             type="button"
@@ -63,7 +63,7 @@ export function ErrorToastProvider({ children }: { children: React.ReactNode }) 
             className={`shrink-0 rounded-lg px-2 py-1 text-xs font-medium hover:bg-opacity-20 hover:text-white ${
               isError
                 ? 'text-red-300 hover:bg-red-500'
-                : 'text-green-300 hover:bg-green-500'
+                : 'text-green-700 hover:bg-green-500 hover:text-white'
             }`}
             aria-label="Dismiss"
           >
