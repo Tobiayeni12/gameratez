@@ -1202,18 +1202,19 @@ app.post('/api/rates/:id/comments', async (req, res) => {
       )
 
       const ownerHandle = (rateRow.rows[0]?.rater_handle || '').trim().toLowerCase()
-      if (ownerHandle && ownerHandle !== u) {
-        try {
-          const bodySnippet = text.length > 80 ? text.slice(0, 80) + '…' : text
-          await query(
-            `INSERT INTO notifications (id, type, created_at, read, for_username, actor_username, actor_display_name, rate_id, body)
-             VALUES ($1,'comment',now(),false,$2,$3,$4,$5,$6)`,
-            [`notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`, ownerHandle, u, comment.displayName, rateId, bodySnippet],
-          )
-        } catch (notifErr) {
-          console.error('Failed to create notification for comment:', notifErr)
-        }
-      }
+      // Temporarily disable notifications
+      // if (ownerHandle && ownerHandle !== u) {
+      //   try {
+      //     const bodySnippet = text.length > 80 ? text.slice(0, 80) + '…' : text
+      //     await query(
+      //       `INSERT INTO notifications (id, type, created_at, read, for_username, actor_username, actor_display_name, rate_id, body)
+      //        VALUES ($1,'comment',now(),false,$2,$3,$4,$5,$6)`,
+      //       [`notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`, ownerHandle, u, comment.displayName, rateId, bodySnippet],
+      //     )
+      //   } catch (notifErr) {
+      //     console.error('Failed to create notification for comment:', notifErr)
+      //   }
+      // }
 
       let commentCount = null
       try {
