@@ -1229,7 +1229,8 @@ app.post('/api/rates/:id/comments', async (req, res) => {
 
       let commentCount = null
       try {
-        commentCount = Number((await query('SELECT COUNT(*)::int AS c FROM comments WHERE rate_id = $1', [rateId])).rows[0]?.c ?? 0)
+        const countResult = await query('SELECT COUNT(*) as c FROM comments WHERE rate_id = $1', [rateId])
+        commentCount = Number(countResult.rows[0]?.c ?? 0)
       } catch (countErr) {
         console.error('Failed to get comment count:', countErr)
       }
