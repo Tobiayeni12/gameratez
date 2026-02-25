@@ -1185,7 +1185,13 @@ app.post('/api/rates/:id/comments', async (req, res) => {
     if (!u) return res.status(400).json({ error: 'username required' })
     if (!text) return res.status(400).json({ error: 'body required' })
     if (dbEnabled) {
-      const rateRow = await query('SELECT rater_handle FROM rates WHERE id = $1 LIMIT 1', [rateId])
+      let rateRow
+      try {
+        rateRow = await query('SELECT rater_handle FROM rates WHERE id = $1 LIMIT 1', [rateId])
+      } catch (rateErr) {
+        console.error('Failed to check rate exists:', rateErr)
+        return res.status(404).json({ error: 'Rate not found' })
+      }
       if (rateRow.rowCount === 0) return res.status(404).json({ error: 'Rate not found' })
       const comment = {
         id: `comment-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
@@ -1195,11 +1201,16 @@ app.post('/api/rates/:id/comments', async (req, res) => {
         body: text,
         createdAt: new Date().toISOString(),
       }
-      await query(
-        `INSERT INTO comments (id, rate_id, username, display_name, body, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6::timestamptz)`,
-        [comment.id, rateId, u, comment.displayName, comment.body, comment.createdAt],
-      )
+      try {
+        await query(
+          `INSERT INTO comments (id, rate_id, username, display_name, body, created_at)
+           VALUES ($1,$2,$3,$4,$5,$6::timestamptz)`,
+          [comment.id, rateId, u, comment.displayName, comment.body, comment.createdAt],
+        )
+      } catch (insertErr) {
+        console.error('Failed to insert comment:', insertErr)
+        return res.status(500).json({ error: 'Failed to post comment' })
+      }
 
       const ownerHandle = (rateRow.rows[0]?.rater_handle || '').trim().toLowerCase()
       // Temporarily disable notifications
