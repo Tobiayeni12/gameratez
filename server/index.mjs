@@ -1203,12 +1203,16 @@ app.post('/api/rates/:id/comments', async (req, res) => {
 
       const ownerHandle = (rateRow.rows[0]?.rater_handle || '').trim().toLowerCase()
       if (ownerHandle && ownerHandle !== u) {
-        const bodySnippet = text.length > 80 ? text.slice(0, 80) + '…' : text
-        await query(
-          `INSERT INTO notifications (id, type, created_at, read, for_username, actor_username, actor_display_name, rate_id, body)
-           VALUES ($1,'comment',now(),false,$2,$3,$4,$5,$6)`,
-          [`notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`, ownerHandle, u, comment.displayName, rateId, bodySnippet],
-        )
+        try {
+          const bodySnippet = text.length > 80 ? text.slice(0, 80) + '…' : text
+          await query(
+            `INSERT INTO notifications (id, type, created_at, read, for_username, actor_username, actor_display_name, rate_id, body)
+             VALUES ($1,'comment',now(),false,$2,$3,$4,$5,$6)`,
+            [`notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`, ownerHandle, u, comment.displayName, rateId, bodySnippet],
+          )
+        } catch (notifErr) {
+          console.error('Failed to create notification for comment:', notifErr)
+        }
       }
 
       const commentCount = Number((await query('SELECT COUNT(*)::int AS c FROM comments WHERE rate_id = $1', [rateId])).rows[0]?.c ?? 0)
@@ -1228,19 +1232,23 @@ app.post('/api/rates/:id/comments', async (req, res) => {
     const rate = rates.find((r) => r.id === rateId)
     const ownerHandle = rate ? (rate.raterHandle || '').trim().toLowerCase() : ''
     if (ownerHandle && ownerHandle !== u) {
-      const bodySnippet = text.length > 80 ? text.slice(0, 80) + '…' : text
-      notifications.unshift({
-        id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        type: 'comment',
-        createdAt: new Date().toISOString(),
-        read: false,
-        forUsername: ownerHandle,
-        actorUsername: u,
-        actorDisplayName: name || 'Guest',
-        rateId,
-        body: bodySnippet,
-      })
-      saveNotifications()
+      try {
+        const bodySnippet = text.length > 80 ? text.slice(0, 80) + '…' : text
+        notifications.unshift({
+          id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          type: 'comment',
+          createdAt: new Date().toISOString(),
+          read: false,
+          forUsername: ownerHandle,
+          actorUsername: u,
+          actorDisplayName: name || 'Guest',
+          rateId,
+          body: bodySnippet,
+        })
+        saveNotifications()
+      } catch (notifErr) {
+        console.error('Failed to create notification for comment:', notifErr)
+      }
     }
     const commentCount = comments.filter((c) => c.rateId === rateId).length
     res.status(201).json({ comment, commentCount })
