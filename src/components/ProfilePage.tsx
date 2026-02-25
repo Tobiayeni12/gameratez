@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { CreateProfileForm, type ProfileFormData } from './CreateProfileForm'
 import type { UserProfile } from '../lib/profileStorage'
-import { updateProfile } from '../lib/profileStorage'
+import { updateProfile, clearProfile, getDefaultProfile } from '../lib/profileStorage'
 import { RateCard } from './RateCard'
 import { useErrorToast } from '../contexts/ErrorToastContext'
 import { API_BASE } from '../lib/apiBase'
@@ -372,13 +372,26 @@ export function ProfilePage({
                 </div>
               )}
               {showEdit && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className="mt-4 rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-2 text-sm font-medium text-gold-400 transition-colors hover:bg-gold-500/20"
-                >
-                  Edit profile
-                </button>
+                <div className="mt-4 flex gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-2 text-sm font-medium text-gold-400 transition-colors hover:bg-gold-500/20"
+                  >
+                    Edit profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearProfile()
+                      onProfileChange(getDefaultProfile())
+                      if (onBack) onBack()
+                    }}
+                    className="rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/20"
+                  >
+                    Sign out
+                  </button>
+                </div>
               )}
             </div>
           </div>

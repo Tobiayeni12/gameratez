@@ -75,3 +75,8 @@ export function updateProfile(profile: UserProfile | Partial<UserProfile>): User
   localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
   return normalized
 }
+
+/** Clear the stored profile from localStorage. */
+export function clearProfile(): void {
+  localStorage.removeItem(STORAGE_KEY)
+}
