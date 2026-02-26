@@ -29,14 +29,14 @@ export function MobileBottomNav({
       className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-surface-border/70 bg-surface/90 backdrop-blur-xl py-2 md:hidden relative"
       style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
     >
-      {/* rate button is absolutely centered */}
+      {/* rate button is absolutely centered inside the bar */}
       <button
         type="button"
         onClick={onRateClick}
-        className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-gold-500 via-gold-400 to-[var(--color-accent)] text-black shadow-gold-glow transition-transform active:scale-95"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-gold-500 via-gold-400 to-[var(--color-accent)] text-black shadow-gold-glow transition-transform active:scale-95"
         aria-label="Rate a game"
       >
-        <span className="text-2xl font-bold">+</span>
+        <span className="text-xl font-bold">+</span>
       </button>
       <button
         type="button"
