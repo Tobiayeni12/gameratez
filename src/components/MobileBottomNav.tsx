@@ -1,11 +1,11 @@
-import { BellIcon, HomeIcon, MessageIcon, SearchIcon } from './icons'
+import { BellIcon, HomeIcon, MessageIcon, SearchIcon, UserIcon } from './icons'
 
 interface MobileBottomNavProps {
   onHomeClick: () => void
-  onSearchClick: () => void
   onRateClick: () => void
   onNotificationsClick: () => void
   onMessagesClick: () => void
+  onProfileClick?: () => void
   isHomeActive?: boolean
   isSearchActive?: boolean
   isNotificationsActive?: boolean
@@ -15,10 +15,10 @@ interface MobileBottomNavProps {
 
 export function MobileBottomNav({
   onHomeClick,
-  onSearchClick,
   onRateClick,
   onNotificationsClick,
   onMessagesClick,
+  onProfileClick,
   isHomeActive = false,
   isSearchActive = false,
   isNotificationsActive = false,
@@ -41,24 +41,14 @@ export function MobileBottomNav({
         <HomeIcon className="h-6 w-6" />
         <span className="text-xs">Home</span>
       </button>
-      <button
-        type="button"
-        onClick={onSearchClick}
-        className={`flex flex-col items-center gap-0.5 rounded-full px-4 py-2 text-[var(--color-text-muted)] transition-colors hover:bg-surface-hover hover:text-[var(--color-text)] ${
-          isSearchActive ? 'text-gold-400' : ''
-        }`}
-        aria-label="Search"
-      >
-        <SearchIcon className="h-6 w-6" />
-        <span className="text-xs">Search</span>
-      </button>
+      {/* central rate button floats above the bar */}
       <button
         type="button"
         onClick={onRateClick}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-gold-500 via-gold-400 to-[var(--color-accent)] text-black shadow-gold-glow transition-transform active:scale-95"
+        className="relative -mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-gold-500 via-gold-400 to-[var(--color-accent)] text-black shadow-gold-glow transition-transform active:scale-95"
         aria-label="Rate a game"
       >
-        <span className="text-xl font-bold">+</span>
+        <span className="text-2xl font-bold">+</span>
       </button>
       <button
         type="button"
@@ -82,6 +72,17 @@ export function MobileBottomNav({
         <MessageIcon className="h-6 w-6" />
         <span className="text-xs">Messages</span>
       </button>
+      {onProfileClick && (
+        <button
+          type="button"
+          onClick={onProfileClick}
+          className="flex flex-col items-center gap-0.5 rounded-full px-4 py-2 text-[var(--color-text-muted)] transition-colors hover:bg-surface-hover hover:text-[var(--color-text)]"
+          aria-label="Profile"
+        >
+          <UserIcon className="h-6 w-6" />
+          <span className="text-xs">Profile</span>
+        </button>
+      )}
     </nav>
   )
 }
