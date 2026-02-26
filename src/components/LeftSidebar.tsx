@@ -1,5 +1,6 @@
 import type { UserProfile } from '../lib/profileStorage'
 import { BellIcon, BookmarkIcon, ExploreIcon, HomeIcon, MessageIcon, MoreIcon, UserIcon } from './icons'
+import { useState, useEffect, useRef } from 'react'
 
 interface LeftSidebarProps {
   profile: UserProfile
@@ -10,6 +11,7 @@ interface LeftSidebarProps {
   onProfileClick: () => void
   onNotificationsClick: () => void
   onSavedFilesClick: () => void
+  onSignOut: () => void
   isFeedActive?: boolean
   isFollowingActive?: boolean
   isMessagesActive?: boolean
@@ -29,6 +31,7 @@ export function LeftSidebar({
   onProfileClick,
   onNotificationsClick,
   onSavedFilesClick,
+  onSignOut,
   isFeedActive = false,
   isFollowingActive = false,
   isMessagesActive = false,
@@ -38,6 +41,20 @@ export function LeftSidebar({
   notificationUnreadCount = 0,
   className = '',
 }: LeftSidebarProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
+
   return (
     <aside
       className={`flex h-full flex-col border-r border-surface-border/60 bg-surface/70 backdrop-blur-xl md:items-stretch ${className}`}
@@ -118,7 +135,7 @@ export function LeftSidebar({
         </button>
 
         {/* User profile at bottom — use saved account */}
-        <div className="mt-auto flex w-full items-center gap-3 rounded-2xl bg-surface-elevated/60 p-3 ring-1 ring-surface-border/60 transition-colors hover:bg-surface-hover/70">
+        <div className="mt-auto flex w-full items-center gap-3 rounded-2xl bg-surface-elevated/60 p-3 ring-1 ring-surface-border/60 transition-colors hover:bg-surface-hover/70" ref={menuRef}>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-hover text-gold-400 shadow-gold-bubble">
             <span className="text-sm font-semibold">
               {profile.displayName[0]?.toUpperCase() ?? '?'}
@@ -132,7 +149,31 @@ export function LeftSidebar({
               @{profile.username}
             </p>
           </div>
-          <MoreIcon className="h-5 w-5 shrink-0 text-[var(--color-text-muted)]" />
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            className="rounded-full p-1.5 text-[var(--color-text-muted)] transition-colors hover:bg-gold-500/10 hover:text-gold-400"
+            aria-label="More options"
+            aria-expanded={menuOpen}
+          >
+            <MoreIcon className="h-5 w-5 shrink-0" />
+          </button>
+
+          {/* Dropdown menu */}
+          {menuOpen && (
+            <div className="absolute bottom-full left-0 right-0 mb-2 min-w-[200px] overflow-hidden rounded-2xl bg-surface-elevated py-1 shadow-xl ring-1 ring-surface-border">
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-[15px] text-[var(--color-text)] transition-colors hover:bg-surface-hover"
+                onClick={() => {
+                  setMenuOpen(false)
+                  onSignOut()
+                }}
+              >
+                <span>Sign out account</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </aside>

@@ -11,7 +11,7 @@ import { RateDetailPage } from './components/RateDetailPage'
 import { SearchPage } from './components/SearchPage'
 import { RightSidebar } from './components/RightSidebar'
 import { EntryGate } from './components/EntryGate'
-import { loadProfile, getDefaultProfile, type UserProfile } from './lib/profileStorage'
+import { loadProfile, getDefaultProfile, clearProfile, type UserProfile } from './lib/profileStorage'
 import { API_BASE } from './lib/apiBase'
 
 function App() {
@@ -48,6 +48,12 @@ function App() {
   const currentProfile = profile ?? getDefaultProfile()
   const isGuest = currentProfile.id === 'guest' || !currentProfile.email
 
+  const handleSignOut = () => {
+    clearProfile()
+    setProfile(null)
+    setView('entry')
+  }
+
   // Entry gate (sign in / create account) — when open, show full-screen then close and go to feed on success
   if (view === 'entry') {
     return (
@@ -77,6 +83,7 @@ function App() {
             onNotificationsClick={() => setView('notifications')}
             onMessagesClick={() => setView('messages')}
             onSavedFilesClick={() => setView('saved')}
+            onSignOut={handleSignOut}
             notificationUnreadCount={notificationUnreadCount}
             isFeedActive={view === 'feed' && activeTab === 'for-you'}
             isFollowingActive={view === 'feed' && activeTab === 'following'}
