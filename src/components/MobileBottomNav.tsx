@@ -26,9 +26,11 @@ export function MobileBottomNav({
 }: MobileBottomNavProps) {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-surface-border/70 bg-surface/90 backdrop-blur-xl py-2 md:hidden relative"
+      className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-surface-border/70 bg-surface/90 backdrop-blur-xl py-2 md:hidden relative"
       style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
     >
+      {/* invisible spacer equal to button width for even distribution */}
+      <div className="w-12" aria-hidden />
       {/* rate button is absolutely centered inside the bar */}
       <button
         type="button"
@@ -82,6 +84,8 @@ export function MobileBottomNav({
           <span className="text-xs">Profile</span>
         </button>
       )}
+      {/* right spacer to mirror left */}
+      <div className="w-12" aria-hidden />
     </nav>
   )
 }

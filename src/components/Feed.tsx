@@ -301,7 +301,9 @@ export function Feed({
   return (
     <main className={`flex min-h-0 flex-1 flex-col border-x border-surface-border ${className}`}>
       {/* Tabs — For you | Following */}
-      <div className="sticky top-0 z-10 flex border-b border-surface-border bg-surface/95 backdrop-blur">
+      {/* keep tabs fixed at top; on mobile they should sit underneath the
+          height‑14 sticky header so add top-14. */}
+      <div className="sticky top-14 z-20 flex border-b border-surface-border bg-surface/95 backdrop-blur">
         <button
           type="button"
           onClick={() => onTabChange('for-you')}
