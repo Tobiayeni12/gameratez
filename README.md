@@ -35,4 +35,6 @@ After the backend is live, set `VITE_API_BASE_URL` on Vercel to that URL and red
 
 ## Create Account
 
-Users create an account with **email and password**. The app checks that the email is valid and that the domain can receive email (MX lookup). No verification email is sent—after signup they go straight to preferences (display name, username, etc.), then into the app.
+Users create an account with **email and password**. The app checks that the email is valid and that the domain can receive email (MX lookup). After signup we queue a verification email rather than immediately moving forward. The user must click the link in the message before they can fill out display name/username and finish creating their profile.
+
+A token is generated on the server and stored temporarily; it expires after ten minutes.  The email contains a link back to the site with the token in the query string.  When the frontend sees that query parameter it automatically validates the token with the backend and advances to the preferences screen.
