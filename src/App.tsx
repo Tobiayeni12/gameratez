@@ -29,14 +29,6 @@ function App() {
 
   useEffect(() => {
     setProfile(loadProfile() ?? getDefaultProfile())
-
-    // if the URL contains a verification token we need to show the entry gate so that
-    // `EntryGate` can pick it up and advance the signup process.  (The email link reloads
-    // the front end, so this effect runs on the landing page.)
-    const params = new URLSearchParams(window.location.search)
-    if (params.has('verifyToken')) {
-      setView('entry')
-    }
   }, [])
 
   const currentProfileForFetch = profile ?? getDefaultProfile()

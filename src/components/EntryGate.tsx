@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { CreateAccountForm, type CreateAccountData } from './CreateAccountForm'
 import { PreferencesForm } from './PreferencesForm'
 import type { UserProfile } from '../lib/profileStorage'
@@ -9,7 +9,7 @@ interface EntryGateProps {
   onProfileCreated: (profile: UserProfile) => void
 }
 
-type Step = 'buttons' | 'createAccount' | 'preferences' | 'signIn' | 'verificationSent'
+type Step = 'buttons' | 'createAccount' | 'preferences' | 'signIn'
 
 export function EntryGate({ onProfileCreated }: EntryGateProps) {
   return (
@@ -38,43 +38,6 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
   const [apiError, setApiError] = useState<string | null>(null)
   const [signupLoading, setSignupLoading] = useState(false)
   const [signInLoading, setSignInLoading] = useState(false)
-  const [verifying, setVerifying] = useState(false)
-
-  // when the page loads we might have been opened via the link that was emailed to the user
-  // (e.g. `/?verifyToken=...`).  If so we hit the verification API to make sure the token is
-  // still valid, then move straight to the preferences step with the returned email filled in.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const token = params.get('verifyToken')
-    if (!token) return
-    setVerifying(true)
-    fetch(`${API_BASE}/api/auth/verify?token=${encodeURIComponent(token)}`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success) {
-          setEmail(json.email || '')
-          setCompleteToken(token)
-          setStep('preferences')
-          // drop the token from the URL so the user can refresh without
-          // re-sending the request or accidentally reusing it.
-          window.history.replaceState({}, '', window.location.pathname)
-        } else {
-          setApiError(json.error || 'Verification failed')
-        }
-      })
-      .catch(() => {
-        setApiError('Unable to verify link; please try again or sign up again.')
-      })
-      .finally(() => setVerifying(false))
-  }, [])
-
-  if (verifying) {
-    return (
-      <div className="w-full max-w-sm text-center">
-        <p className="mb-4">Checking your verification link...</p>
-      </div>
-    )
-  }
 
   if (step === 'createAccount') {
     return (
@@ -103,9 +66,9 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
                 setApiError(json.details ? `${msg}: ${json.details}` : msg)
                 return
               }
-              // don't get a token back any more; the user must click the email link
               setEmail(json.email ?? data.email)
-              setStep('verificationSent')
+              setCompleteToken(json.completeToken ?? null)
+              setStep('preferences')
             } catch {
               setApiError('Could not reach server. Run "npm run dev" to start the app and API server.')
             } finally {
@@ -261,11 +224,6 @@ function EntryGateContent({ onProfileCreated }: EntryGateProps) {
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-4 text-[var(--color-text)]">
-      {apiError && (
-        <p className="mb-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
-          {apiError}
-        </p>
-      )}
       <button
         type="button"
         onClick={() => setStep('createAccount')}

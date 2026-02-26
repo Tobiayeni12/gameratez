@@ -298,41 +298,6 @@ function generateToken() {
   return crypto.randomBytes(32).toString('hex')
 }
 
-// send a simple verification message using either Resend or Gmail/Nodemailer.  If neither
-// service is configured we just log the token for local development.
-async function sendVerificationEmail(to, token) {
-  const verifyUrl = `${SITE_URL}/?verifyToken=${encodeURIComponent(token)}`
-  const subject = 'Verify your Gameratez account'
-  const html = `
-    <p>Thanks for creating an account! Click the link below to verify your email and continue
-    setting up your profile. The link will expire in 10 minutes.</p>
-    <p><a href="${verifyUrl}">Verify email</a></p>
-    <p>If the link above does not work, copy and paste this URL into your browser:</p>
-    <p>${verifyUrl}</p>
-  `
-  const text = `Verify your account by visiting: ${verifyUrl}`
-
-  if (resend) {
-    await resend.emails.send({
-      from: FROM_EMAIL,
-      to,
-      subject,
-      html,
-      text,
-    })
-  } else if (gmailTransporter) {
-    await gmailTransporter.sendMail({
-      from: FROM_EMAIL,
-      to,
-      subject,
-      text,
-      html,
-    })
-  } else {
-    console.log(`verification token for ${to}: ${token}`)
-  }
-}
-
 // Check that the email domain can receive mail (has MX records)
 async function isRealEmailDomain(email) {
   const match = /@([^@]+)$/.exec(email)
@@ -346,11 +311,7 @@ async function isRealEmailDomain(email) {
   }
 }
 
-// POST /api/auth/signup – start a new account by queuing a verification email
-// A token is generated and stored in `completeTokens` but not returned to the client.  The client
-// simply gets a success response and must wait for the user to click the link in the email before
-// they can continue to the preferences screen.  This prevents bypassing verification by keeping
-// the token private.
+// POST /api/auth/signup – no verification email; validate real email then go to preferences
 app.post('/api/auth/signup', async (req, res) => {
   try {
     const { email, password } = req.body
@@ -384,41 +345,11 @@ app.post('/api/auth/signup', async (req, res) => {
       expiresAt,
     })
 
-    // send a verification email with a link that encodes the token.  The frontend will
-    // pick up the token from the query string and use it to advance to the preferences step.
-    try {
-      await sendVerificationEmail(normalizedEmail, completeToken)
-    } catch (err) {
-      console.error('Failed to send verification email:', err)
-      // we don't treat this as a fatal error for the signup request; the user can
-      // retry by submitting the form again.
-    }
-
-    // only expose the normalized email to the client; the token stays in the email link
-    res.json({ success: true, email: normalizedEmail })
+    res.json({ success: true, email: normalizedEmail, completeToken })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
   }
-})
-
-// GET /api/auth/verify - used by the frontend when a user clicks the link in their
-// verification email.  It simply checks that the token exists and hasn't expired, and
-// returns the email address so the UI can pre-fill the form.
-app.get('/api/auth/verify', (req, res) => {
-  const token = req.query.token
-  if (!token || typeof token !== 'string') {
-    return res.status(400).json({ error: 'token required' })
-  }
-  const data = completeTokens.get(token)
-  if (!data) {
-    return res.status(400).json({ error: 'Invalid or expired token' })
-  }
-  if (Date.now() > data.expiresAt) {
-    completeTokens.delete(token)
-    return res.status(400).json({ error: 'Token expired' })
-  }
-  res.json({ success: true, email: data.email })
 })
 
 // POST /api/auth/complete
