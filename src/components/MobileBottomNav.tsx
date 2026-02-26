@@ -1,4 +1,4 @@
-import { BellIcon, HomeIcon, MessageIcon, SearchIcon, UserIcon } from './icons'
+import { BellIcon, HomeIcon, MessageIcon, UserIcon } from './icons'
 
 interface MobileBottomNavProps {
   onHomeClick: () => void
@@ -20,7 +20,6 @@ export function MobileBottomNav({
   onMessagesClick,
   onProfileClick,
   isHomeActive = false,
-  isSearchActive = false,
   isNotificationsActive = false,
   isMessagesActive = false,
   notificationUnreadCount = 0,

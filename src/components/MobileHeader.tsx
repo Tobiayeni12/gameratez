@@ -8,7 +8,7 @@ interface MobileHeaderProps {
   onSearchClick?: () => void
 }
 
-export function MobileHeader({ onSignOut }: MobileHeaderProps) {
+export function MobileHeader({ onSignOut, onSearchClick }: MobileHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
