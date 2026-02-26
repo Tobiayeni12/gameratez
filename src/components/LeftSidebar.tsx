@@ -135,7 +135,10 @@ export function LeftSidebar({
         </button>
 
         {/* User profile at bottom — use saved account */}
-        <div className="mt-auto flex w-full items-center gap-3 rounded-2xl bg-surface-elevated/60 p-3 ring-1 ring-surface-border/60 transition-colors hover:bg-surface-hover/70" ref={menuRef}>
+        {/* profile summary + menu
+             make this container positioned so the absolute dropdown can align to the
+             “more” button rather than stretching the full sidebar width. */}
+        <div className="relative mt-auto flex w-full items-center gap-3 rounded-2xl bg-surface-elevated/60 p-3 ring-1 ring-surface-border/60 transition-colors hover:bg-surface-hover/70" ref={menuRef}>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-hover text-gold-400 shadow-gold-bubble">
             <span className="text-sm font-semibold">
               {profile.displayName[0]?.toUpperCase() ?? '?'}
@@ -161,7 +164,7 @@ export function LeftSidebar({
 
           {/* Dropdown menu */}
           {menuOpen && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 min-w-[200px] overflow-hidden rounded-2xl bg-surface-elevated py-1 shadow-xl ring-1 ring-surface-border">
+            <div className="absolute bottom-full right-0 mb-2 w-max min-w-[200px] z-50 overflow-hidden rounded-2xl bg-surface-elevated py-1 shadow-xl ring-1 ring-surface-border">
               <button
                 type="button"
                 className="flex w-full items-center gap-3 px-4 py-3 text-left text-[15px] text-[var(--color-text)] transition-colors hover:bg-surface-hover"
